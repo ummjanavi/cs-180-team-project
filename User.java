@@ -3,30 +3,26 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 // I have questions
-// 1: is an arraylist of users as a field for a user possible? Even if yes, does it make sense for it to
-// be an arraylist of Strings of usernames? If an arrayList of users makes more sense then I need help with constructors
-
-// 2: Do the removeFriend and removeBlocked methods work? seems to easy
-// 3: I assumed that while being stored in the txt file, the friends/blocked will be separated by a comma,
-// but if something else was already decided I can easily change that
-// 4: We need those new line characters in WriteToFile right?
-// 5: We can't actually display the pfp yet right
+// 1: Do the removeFriend and removeBlocked methods work? seems to easy
+// 2: I assumed that while being stored in the txt file, the friends/blocked will be separated by a comma, but if something else was already decided its an easy change
+// 3: We need those new line characters in WriteToFile right?
+// 4: We can't actually display the pfp yet right
 
 public class User {
     private String username;
     private String password;
     private String profilePic;  // file name of pfp
     private boolean openMessaging;  // true/false user can receive messages from anyone
-    private ArrayList<User> friends;  // are these two possible?
-    private ArrayList<User> blocked;
+    private ArrayList<String> friends;  // String arraylist of friend's usernames
+    private ArrayList<String> blocked;  // String arraylist of blocked people's usernames
 
     public User(String username, String password) {  // called when creating a new user
         this.username = username;
         this.password = password;
         this.profilePic = "default.jpg";
         this.openMessaging = false;
-        this.friends = new ArrayList<>();
-        this.blocked = new ArrayList<>();
+        this.friends = new ArrayList<String>();
+        this.blocked = new ArrayList<String>();
     }
 
     public User(String username) {  // called to load an existing user
@@ -44,11 +40,12 @@ public class User {
                     this.profilePic = line;
                 } else if (lineCount == 4) {
                     this.openMessaging = Boolean.parseBoolean(line);
-                } else if (lineCount == 5) { // maybe change friends field to ArrayList<String> type
-                    String[] friendUsernames = line.split(",");
-                    //this.friends = new ArrayList<>(Arrays.asList(friendUsernames));
+                } else if (lineCount == 5) {
+                    String[] f = line.split(",");
+                    this.friends = new ArrayList<String>(Arrays.asList(f));
                 } else if (lineCount == 6) {
-                    // blank for now
+                    String[] f = line.split(",");
+                    this.blocked = new ArrayList<String>(Arrays.asList(f));
                 }
                 br.close();
             }
@@ -81,34 +78,35 @@ public class User {
     public void setOpenMessaging(boolean openMessaging) {
         this.openMessaging = openMessaging;
     }
-    public ArrayList<User> getFriends() {
+    public ArrayList<String> getFriends() {
         return friends;
     }
-    public void setFriends(ArrayList<User> friends) {
+    public void setFriends(ArrayList<String> friends) {
         this.friends = friends;
     }
-    public ArrayList<User> getBlocked() {
+    public ArrayList<String> getBlocked() {
         return blocked;
     }
-    public void setBlocked(ArrayList<User> blocked) {
+    public void setBlocked(ArrayList<String> blocked) {
         this.blocked = blocked;
     }
 
-    // could change these next 4 to return boolean but idt we need to
+    // we could change these next 4 to return boolean but idt we need to
+    // we could also pass in a username (string) to these next 4 if it makes sense
     public void addFriend(User user) {
-        this.friends.add(user);
+        this.friends.add(user.getUsername());
     }
 
     public void removeFriend(User user) {
-        this.friends.remove(user); // does this work? Why isn't the new equals method being used to compare them?
+        this.friends.remove(user.getUsername());
     }
 
     public void blockUser(User user) {
-        this.blocked.add(user);
+        this.blocked.add(user.getUsername());
     }
 
     public void unblockUser(User user) {
-        this.friends.remove(user); // same here
+        this.friends.remove(user.getUsername());
     }
 
     public boolean equals(User user) {
@@ -123,9 +121,9 @@ public class User {
             return "false";
         }
     }
-    public String toString(ArrayList<User> people) {
+    public String toString(ArrayList<String> usernames) {
         String retThis = "";
-        for (User current : people) {
+        for (String current : usernames) {
             retThis += current + ",";
         }
         retThis = retThis.substring(0, retThis.length() - 1); // to remove last comma
