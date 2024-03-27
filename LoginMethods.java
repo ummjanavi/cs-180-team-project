@@ -5,7 +5,7 @@ import java.io.*;
 public class LoginMethods {
     public boolean checkUsername(String username) {
         try {
-            FileReader fr = new FileReader("allAccounts.txt");
+            FileReader fr = new FileReader("ummjanavi.txt");
             BufferedReader bfr = new BufferedReader(fr);
             String line = bfr.readLine();
             while (line != null) {
@@ -32,22 +32,24 @@ public class LoginMethods {
     }
     public boolean checkPassword(String username, String password) {
         try {
-            FileReader fr = new FileReader(username);
+            FileReader fr = new FileReader(username + ".txt");
             BufferedReader bfr = new BufferedReader(fr);
-            String line = bfr.readLine();
+            String line;
             int lineCount = 0;
-            while (line != null) {
+            while ((line = bfr.readLine()) != null) {
                 lineCount++;
                 if (lineCount == 2) {
-                    if (password != line) {
+                    if (!password.equals(line)) {
+                        System.out.println("wrong");
                         return false;
                     }
                 }
             }
-
         } catch (Exception e) {
+            System.out.println("exception");
             return false;
         }
+        System.out.println("correct");
         return true;
     }
     public boolean addProfilePicture(File pictureFile, String username) {
