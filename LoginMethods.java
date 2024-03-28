@@ -25,7 +25,7 @@ public class LoginMethods {
         File userFile = new File(username + ".txt");
         // in the future, we need to specify a specific directory where
         // we will store user text files on our server.
-        if (userFile.exists()) {
+        if (!(userFile.exists())) {
             return true;
         } else {
             System.out.println ("Username taken! Please try again with another.");
