@@ -21,8 +21,8 @@ public class User {
         this.password = password;
         this.profilePic = "default.jpg";
         this.openMessaging = false;
-        this.friends = new ArrayList<String>();
-        this.blocked = new ArrayList<String>();
+        this.friends = new ArrayList<>();
+        this.blocked = new ArrayList<>();
     }
 
     public User(String username) {  // called to load an existing user
@@ -42,10 +42,10 @@ public class User {
                     this.openMessaging = Boolean.parseBoolean(line);
                 } else if (lineCount == 5) {
                     String[] f = line.split(",");
-                    this.friends = new ArrayList<String>(Arrays.asList(f));
+                    this.friends = new ArrayList<>(Arrays.asList(f));
                 } else if (lineCount == 6) {
                     String[] f = line.split(",");
-                    this.blocked = new ArrayList<String>(Arrays.asList(f));
+                    this.blocked = new ArrayList<>(Arrays.asList(f));
                 }
                 br.close();
             }
@@ -142,7 +142,7 @@ public class User {
             bw.close();
             return true;
         } catch (IOException e) {
-            System.out.println("could not save " + this.username + "'s data to his/her file");
+            System.out.println("Could not save " + this.username + "'s data to his/her file");
             return false;
         }
     }
