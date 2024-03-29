@@ -14,7 +14,7 @@ public class searchMethods {
                 if (fileName.endsWith(".txt")) {
                     String username = fileName.substring(0, fileName.length() - 4);
 
-                    if (username.contains(search)) {
+                    if (username.contains(search) && !username.contains("Messages")) {
                         matchedUsers.add(username);
                     }
                 }
@@ -24,7 +24,4 @@ public class searchMethods {
         // Return the list of matched users directly
         return matchedUsers;
     } //searchUsers()
-
-
-
 } //end class
