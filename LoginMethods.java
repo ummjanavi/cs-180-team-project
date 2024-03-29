@@ -95,26 +95,5 @@ public class LoginMethods {
             System.out.println("An error occurred while logging in.\nReturning to Login Menu.");
             return false;
         }
-    } //validateLogin()
-    
-    public boolean addProfilePicture(File pictureFile, String username) {
-        try {
-            BufferedImage image = ImageIO.read(pictureFile);
-            FileWriter fw = new FileWriter(username);
-
-            for (int y = 0; y < image.getHeight(); y++) {
-                for (int x = 0; x < image.getWidth(); x++) {
-                    int rgb = image.getRGB(x, y);
-                    int red = (rgb >> 16) & 0xFF;
-                    int green = (rgb >> 8) & 0xFF;
-                    int blue = rgb & 0xFF;
-                    fw.write(red + " " + green + " " + blue + "\n");
-                }
-            }
-            fw.close();
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
-    }
-}
+    } //validate login
+} // end class
