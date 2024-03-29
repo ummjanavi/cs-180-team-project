@@ -1,4 +1,10 @@
+import javax.swing.*;
+import java.awt.*;
 import java.io.*;
+import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -23,36 +29,51 @@ public class User {
         this.openMessaging = false;
         this.friends = new ArrayList<>();
         this.blocked = new ArrayList<>();
+        this.writeToFile();
     }
 
     public User(String username) {  // called to load an existing user
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(username + ".txt"));
+        File file = new File(username + ".txt");
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
             String line;
             int lineCount = 0;
             while ((line = br.readLine()) != null) {
                 lineCount++;
-                if (lineCount == 1) {
-                    this.username = line;
-                } else if (lineCount == 2) {
-                    this.password = line;
-                } else if (lineCount == 3) {
-                    this.profilePic = line;
-                } else if (lineCount == 4) {
-                    this.openMessaging = Boolean.parseBoolean(line);
-                } else if (lineCount == 5) {
-                    String[] f = line.split(",");
-                    this.friends = new ArrayList<>(Arrays.asList(f));
-                } else if (lineCount == 6) {
-                    String[] f = line.split(",");
-                    this.blocked = new ArrayList<>(Arrays.asList(f));
+                switch (lineCount) {
+                    case 1:
+                        this.username = line;
+                        break;
+                    case 2:
+                        this.password = line;
+                        break;
+                    case 3:
+                        this.profilePic = line;
+                        break;
+                    case 4:
+                        this.openMessaging = Boolean.parseBoolean(line);
+                        break;
+                    case 5:
+                        if (!line.isEmpty()) { // Ensure there are friends listed before splitting
+                            String[] friendsArray = line.split(",");
+                            this.friends = new ArrayList<>(Arrays.asList(friendsArray));
+                        } else {
+                            this.friends = new ArrayList<>();
+                        }
+                        break;
+                    case 6:
+                        if (!line.isEmpty()) { // Ensure there are users listed before splitting
+                            String[] blockedArray = line.split(",");
+                            this.blocked = new ArrayList<>(Arrays.asList(blockedArray));
+                        } else {
+                            this.blocked = new ArrayList<>();
+                        }
+                        break;
                 }
-                br.close();
             }
+        } catch (FileNotFoundException e) {
+            System.out.println("File for user " + username + " does not exist.");
         } catch (IOException e) {
-            System.out.println("User " + username + " does not exist");
-        } catch (Exception e) {
-            System.out.println("This should never print, something went very wrong");
+            System.out.println("An IO error occurred while reading user " + username + ".");
             e.printStackTrace();
         }
     }
@@ -69,7 +90,15 @@ public class User {
     public String getProfilePic() {
         return profilePic;
     }
-    public void setProfilePic(String profilePic) {
+    public void setProfilePic(String uploadedFilePath) {
+        String newFileName = this.username + "ProfilePic.jpg";
+        File newFile = new File(newFileName);
+        try {
+            Files.copy(Paths.get(uploadedFilePath), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            this.profilePic = newFileName;
+        } catch (IOException e) {
+            System.out.println("Failed to update profile picture: " + e.getMessage());
+        }
         this.profilePic = profilePic;
     }
     public boolean isOpenMessaging() {
@@ -130,25 +159,53 @@ public class User {
         return retThis;
     }
     public boolean writeToFile() { // writes user data to their file. returns false if failed
-        try {
-            BufferedWriter bw = new BufferedWriter(new FileWriter(username + ".txt", false));
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(username + ".txt", false))) {
             bw.write(this.username + '\n'); // I need these new like characters right?
             bw.write(this.password + '\n');
-            bw.write(this.profilePic + '\n');
-            bw.write(toString(this.openMessaging) + '\n'); // is this the only setting in the settings menu?
-            bw.write(toString(this.friends) + '\n');
-            bw.write(toString(this.blocked) + '\n');
-            bw.flush();
-            bw.close();
+            if (this.profilePic != null) {
+                bw.write(this.profilePic + "\n");
+            } else {
+                bw.write("default.jpg" + "\n");
+            }
+            bw.write(Boolean.toString(this.openMessaging) + '\n'); // is this the only setting in the settings menu?
+            String friendsStr;
+            if (this.friends == null) {
+                friendsStr = "";
+            } else {
+                friendsStr = String.join(",", this.friends);
+            }
+            String blockedStr;
+            if (this.blocked == null) {
+                blockedStr = "";
+            } else {
+                blockedStr = String.join(",", this.blocked);
+            }
+            bw.write(friendsStr + '\n');
+            bw.write(blockedStr + '\n');
             return true;
         } catch (IOException e) {
-            System.out.println("Could not save " + this.username + "'s data to his/her file");
+           // System.out.println("Could not save " + this.username + "'s data to his/her file");
             return false;
         }
-    }
+    } //writeToFile
 
     public void displayProfile() {  // could change to return boolean
-        System.out.println(this.profilePic); // actually display pfp here later
-        System.out.println(this.username);
+        ImageIcon icon = new ImageIcon(this.profilePic);
+        JFrame jf = new JFrame("Profile");
+        jf.setSize(300, 350);
+        jf.setResizable(false);
+        jf.setLocationRelativeTo(null);
+        jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        JLabel profile = new JLabel(icon);
+        JLabel userInfo = new JLabel(this.username, SwingConstants.CENTER);
+        JLabel title = new JLabel(this.username + "'s Profile", SwingConstants.CENTER);
+
+        jf.getContentPane().add(title, BorderLayout.NORTH);
+        jf.getContentPane().add(profile, BorderLayout.CENTER);
+        jf.getContentPane().add(userInfo, BorderLayout.SOUTH);
+        profile.setHorizontalAlignment(JLabel.CENTER);
+        jf.getContentPane().add(profile, BorderLayout.CENTER);
+        jf.setVisible(true);
     }
 }
