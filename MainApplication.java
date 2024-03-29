@@ -401,6 +401,17 @@ public class MainApplication {
     } //userViewerMenu
 
     public static void directMessageMenu(User currentUser, User searchedUser) {
+        if (currentUser.getBlocked().contains(searchedUser.getUsername())) {
+            System.out.println("You cannot message this user. You have the recipient blocked.");
+            return;
+        }
+        if (searchedUser.getBlocked().contains(currentUser.getUsername())) {
+            System.out.println("You cannot message this user.");
+        }
+        if (!searchedUser.isOpenMessaging() && !currentUser.getFriends().contains(searchedUser.getUsername())) {
+            System.out.println("You cannot message this user.");
+        }
+        // messages are ambiguous to prevent some sleuthing LOL
         String choice;
         do {
             if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
@@ -420,8 +431,11 @@ public class MainApplication {
 
             switch (choice) {
                 case "1":
-                    System.out.println("Enter your message:");
+                    System.out.println("Enter your message or enter 'back' to return:");
                     String message = scan.nextLine();
+                    if ("back".equalsIgnoreCase(message)) {
+                        return; // Return to showLoginMenu
+                    }
                     if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
                         System.out.println("Error sending message.");
                         break;
@@ -432,8 +446,12 @@ public class MainApplication {
                         System.out.println("There are no messages to delete.");
                         break;
                     }
-                    System.out.println("Enter the number next to the message you'd like to delete");
+                    System.out.println("Enter the number next to the message you'd like to delete or enter 'back' to " +
+                            "return:");
                     String deleteIndexStr = scan.nextLine().trim();
+                    if ("back".equalsIgnoreCase(deleteIndexStr)) {
+                        return; // Return to showLoginMenu
+                    }
                     int deleteIndex;
                     try {
                         deleteIndex = Integer.parseInt(deleteIndexStr) - 1;
@@ -460,7 +478,7 @@ public class MainApplication {
             }
 
         } while (!choice.equals("3"));
-    }
+    } //directMessagingMenu()
 
 
 } // End class
