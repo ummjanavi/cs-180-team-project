@@ -1,9 +1,13 @@
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
 import java.util.*;
 
 public class MainApplication {
     private static Scanner scan = new Scanner(System.in);
     private static LoginMethods loginMethods = new LoginMethods();
     private static searchMethods searchMethods = new searchMethods();
+    private static directMessageMethods directMessageMethods = new directMessageMethods();
 
 
     public static void main(String[] args) {
@@ -54,7 +58,7 @@ public class MainApplication {
         }
 
         if (loginMethods.validateLogin(username, password)) {
-            User currentUser = new User("username", "password");
+            User currentUser = new User(username);
             showMainMenu(currentUser); // Transition to main menu after successful login
         } else {
             return;
@@ -134,11 +138,12 @@ public class MainApplication {
             switch (choice) {
                 case "1":
                     changePasswordProcess(currentUser);
+                    break;
                 case "2":
                     changeDirectMessageSetting(currentUser);
                     break;
                 case "3":
-                    // no code for this yet
+                    updateProfilePictureProcess(currentUser);
                     break;
                 case "4":
                     System.out.println("Returning...");
@@ -164,6 +169,8 @@ public class MainApplication {
 
         if (!(oldPassword.equals(currentUser.getPassword()))) {
             System.out.println("Incorrect Password. Try again");
+            System.out.println(oldPassword);
+            System.out.println(currentUser.getPassword());
             return;
         }
         System.out.println("Enter your new password");
@@ -198,20 +205,20 @@ public class MainApplication {
             switch (choice) {
                 case "1":
                     currentUser.setOpenMessaging(true);
-                    if (currentUser.writeToFile()) {
+                    if (!currentUser.writeToFile()) {
                         currentUser.setOpenMessaging(oldSetting);
                         System.out.println("An error occurred.");
                         break;
                     }
-                    break;
+                    return;
                 case "2":
                     currentUser.setOpenMessaging(false);
-                    if (currentUser.writeToFile()) {
+                    if (!currentUser.writeToFile()) {
                         currentUser.setOpenMessaging(oldSetting);
                         System.out.println("An error occurred.");
                         break;
                     }
-                    break;
+                    return;
                 case "3":
                     System.out.println("Returning...");
                     break;
@@ -223,10 +230,34 @@ public class MainApplication {
         } while (!choice.equals("3"));
     } //directMessageSettings
 
+    public static void updateProfilePictureProcess(User currentUser) {
+        SwingUtilities.invokeLater(() -> {
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setDialogTitle("Select Profile Picture");
+            fileChooser.setAcceptAllFileFilterUsed(false);
+            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", "jpg",
+                    "jpeg", "png"));
+            int result = fileChooser.showOpenDialog(null);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                File selectedFile = fileChooser.getSelectedFile();
+                String filePath = selectedFile.getAbsolutePath();
+                String oldPic = currentUser.getProfilePic();
+                currentUser.setProfilePic(filePath);
+                if (!currentUser.writeToFile()) {
+                    currentUser.setProfilePic(oldPic);
+                    System.out.println("Failed to update profile picture.");
+                }
+            } else {
+                System.out.println("No file was selected");
+            }
+        });
+    } //updateProfilePictureProcess()
+
     public static void searchProcess(User currentUser) {
         System.out.println("Search:");
         String search = scan.nextLine().trim();
         ArrayList<String> results = searchMethods.searchUsers(search);
+        results.remove(currentUser.getUsername());
         if (results.isEmpty()) {
             System.out.println("No matched users");
             return;
@@ -235,56 +266,74 @@ public class MainApplication {
                 System.out.println((i + 1) + ". " + results.get(i));
             }
         }
-
-        System.out.println("Enter the number of the user you want to select, or type 'back' to return:");
-        String userNumberStr = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(userNumberStr)) {
-            return;
-        }
-        try {
-            int userNumber = Integer.parseInt(userNumberStr) - 1; // Convert to 0-based index
-            if (userNumber >= 0 && userNumber < results.size()) {
-                // Valid selection, proceed with userViewer or similar
-                String selectedUser = results.get(userNumber);
-                User searchedUser = new User(selectedUser);
-                userViewerMenu(currentUser, searchedUser);
-            } else {
-                // Number not in the list
-                System.out.println("Error: Selection out of range. Please try again.");
+        while (true) {
+            System.out.println("Enter the number of the user you want to select, or type 'back' to return:");
+            String userNumberStr = scan.nextLine().trim();
+            if ("back".equalsIgnoreCase(userNumberStr)) {
+                return;
             }
-        } catch (NumberFormatException e) {
-            System.out.println("Error: Invalid input. Please enter a number.");
+            try {
+                int userNumber = Integer.parseInt(userNumberStr) - 1; // Convert to 0-based index
+                if (userNumber >= 0 && userNumber < results.size()) {
+                    // Valid selection, proceed with userViewer or similar
+                    String selectedUser = results.get(userNumber);
+                    User searchedUser = new User(selectedUser);
+                    searchedUser.displayProfile();
+                    userViewerMenu(currentUser, searchedUser);
+                    break;
+                } else {
+                    // Number not in the list
+                    System.out.println("Error: Selection out of range. Please try again.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Error: Invalid input. Please enter a number.");
+            }
         }
     } //searchProcess()
 
     public static void userViewerMenu(User currentUser, User searchedUser) {
         String choice;
         do {
-            searchedUser.displayProfile();
             System.out.println("1. Add/Remove User as friend.");
             System.out.println("2. Block/Unblock User");
             System.out.println("3. Direct Message");
+            System.out.println("4. Exit");
             System.out.println("Enter choice:");
 
             choice = scan.nextLine().trim();
 
             switch (choice) {
                 case "1":
+                    if (currentUser.getBlocked().contains(searchedUser.getUsername())) {
+                        System.out.println("Cannot add " + searchedUser.getUsername() + " since they are blocked.");
+                        break;
+                    }
+                    ArrayList<String> searchedUserBlocked = searchedUser.getBlocked();
+                    if (searchedUserBlocked != null && searchedUserBlocked.contains(currentUser.getUsername())) {
+                        System.out.println("Cannot add " + searchedUser.getUsername() + " as a friend because you are blocked.");
+                        break;
+                    }
                     ArrayList<String> searchedFriends = searchedUser.getFriends();
+                    if (searchedFriends == null) {
+                        searchedFriends = new ArrayList<>();
+                    }
                     ArrayList<String> currentFriends = currentUser.getFriends();
+                    if (currentFriends == null) {
+                        currentFriends = new ArrayList<>();
+                    }
                     if (currentFriends.contains(searchedUser.getUsername())) {
                         currentFriends.remove(searchedUser.getUsername());
                         searchedFriends.remove(currentUser.getUsername());
                         if (!currentUser.writeToFile()) {
                             currentFriends.add(searchedUser.getUsername());
-                            System.out.print("Action not completed");
+                            System.out.println("Action not completed");
                             break;
                         } else if (!searchedUser.writeToFile()) {
-                            System.out.print("Action not completed");
+                            System.out.println("Action not completed");
                             searchedFriends.add(currentUser.getUsername());
                             break;
                         } else {
-                            System.out.print("Action completed");
+                            System.out.println(searchedUser.getUsername() + " removed as a friend!");
                             break;
                         }
                     } else {
@@ -292,45 +341,126 @@ public class MainApplication {
                         searchedFriends.add(currentUser.getUsername());
                         if (!currentUser.writeToFile()) {
                             currentFriends.remove(searchedUser.getUsername());
-                            System.out.print("Action not completed");
+                            System.out.println("Action not completed");
                             break;
                         } else if (!searchedUser.writeToFile()) {
-                            System.out.print("Action not completed");
+                            System.out.println("Action not completed");
                             searchedFriends.remove(currentUser.getUsername());
                             break;
                         } else {
-                            System.out.print("Action completed");
+                            System.out.println(searchedUser.getUsername() + " added as a friend!");
                             break;
                         }
                     }
                 case "2":
                     ArrayList<String> blocked = currentUser.getBlocked();
-                    if (blocked.contains(searchedUser.getUsername())) {
-                        blocked.remove(searchedUser.getUsername());
+                    if (blocked == null) {
+                        blocked = new ArrayList<>();
+                    }
+                    if (blocked.contains(searchedUser.getUsername())) { // already blocked
+                        blocked.remove(searchedUser.getUsername()); // removed from blocked list
                         if (!currentUser.writeToFile()) {
                             blocked.add(searchedUser.getUsername());
-                            System.out.print("Action not completed");
+                            System.out.println("Action not completed");
                             break;
                         }
+                        System.out.println("Successfully unblocked " + searchedUser.getUsername());
                     } else {
-                        blocked.add(searchedUser.getUsername());
+                        blocked.add(searchedUser.getUsername()); // if not on list, block them
+                        currentUser.getFriends().remove(searchedUser.getUsername());
                         if (!currentUser.writeToFile()) {
-                            blocked.remove(searchedUser.getUsername());
-                            System.out.print("Action not completed");
+                            blocked.remove(searchedUser.getUsername()); // if fails, remove
+                            currentUser.getFriends().add(searchedUser.getUsername());
+                            System.out.println("Action not completed");
                             break;
-                        } else {
-                            System.out.print("Action completed");
+                        } else { // if it didnt fail
+                            ArrayList<String> searchedFriends1 = searchedUser.getFriends(); // remove from friends list
+                            if (searchedFriends1 != null && searchedFriends1.contains(currentUser.getUsername())) {
+                                searchedFriends1.remove(currentUser.getUsername());
+                                if (!searchedUser.writeToFile()) {
+                                    searchedFriends1.add(currentUser.getUsername());
+                                    System.out.println("Action not completed");
+                                }
+                            }
+                            System.out.println(searchedUser.getUsername() + " successfully blocked.");
                             break;
                         }
                     }
                 case "3":
-                    //// not made yet
+                    directMessageMenu(currentUser, searchedUser);
+                    break;
+                case "4":
+                    System.out.println("Returning...");
                     break;
                 default:
+                    System.out.println("Invalid choice. Please try again.");
                     break;
             }
-        } while (!choice.equals("3"));
+        } while (!choice.equals("4"));
 
     } //userViewerMenu
+
+    public static void directMessageMenu(User currentUser, User searchedUser) {
+        String choice;
+        do {
+            if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
+                System.out.println("Error creating message file.");
+                break;
+            }
+            List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
+            if (!directMessageMethods.displayMessages(messages)) {
+                System.out.println("No messages yet.");
+            }
+            System.out.println("Direct Message Options:");
+            System.out.println("1. Send Message");
+            System.out.println("2. Delete Message");
+            System.out.println("3. Exit");
+
+            choice = scan.nextLine().trim();
+
+            switch (choice) {
+                case "1":
+                    System.out.println("Enter your message:");
+                    String message = scan.nextLine();
+                    if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
+                        System.out.println("Error sending message.");
+                        break;
+                    }
+                    break;
+                case "2":
+                    if (messages.isEmpty()) {
+                        System.out.println("There are no messages to delete.");
+                        break;
+                    }
+                    System.out.println("Enter the number next to the message you'd like to delete");
+                    String deleteIndexStr = scan.nextLine().trim();
+                    int deleteIndex;
+                    try {
+                        deleteIndex = Integer.parseInt(deleteIndexStr) - 1;
+                        if (deleteIndex < 0 || deleteIndex >= messages.size()) {
+                            System.out.println("Invalid message number. Please try again.");
+                            break;
+                        }
+                    } catch (NumberFormatException e) {
+                        break;
+                    }
+                    messages.remove(deleteIndex);
+                    if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
+                    System.out.println("Message deleted successfully");
+                    } else {
+                        System.out.println("Could not delete message");
+                    }
+                    break;
+                case "3":
+                    System.out.println("Returning...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+
+        } while (!choice.equals("3"));
+    }
+
 
 } // End class
