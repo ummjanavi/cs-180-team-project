@@ -293,34 +293,22 @@ public class MainApplication {
                     }
                     if (currentFriends.contains(searchedUser.getUsername())) {
                         currentFriends.remove(searchedUser.getUsername());
-                        searchedFriends.remove(currentUser.getUsername());
                         if (!currentUser.writeToFile()) {
                             currentFriends.add(searchedUser.getUsername());
                             System.out.println("Action not completed");
-                            break;
-                        } else if (!searchedUser.writeToFile()) {
-                            System.out.println("Action not completed");
-                            searchedFriends.add(currentUser.getUsername());
-                            break;
                         } else {
                             System.out.println(searchedUser.getUsername() + " removed as a friend!");
-                            break;
                         }
+                        break;
                     } else {
                         currentFriends.add(searchedUser.getUsername());
-                        searchedFriends.add(currentUser.getUsername());
                         if (!currentUser.writeToFile()) {
                             currentFriends.remove(searchedUser.getUsername());
                             System.out.println("Action not completed");
-                            break;
-                        } else if (!searchedUser.writeToFile()) {
-                            System.out.println("Action not completed");
-                            searchedFriends.remove(currentUser.getUsername());
-                            break;
                         } else {
                             System.out.println(searchedUser.getUsername() + " added as a friend!");
-                            break;
                         }
+                        break;
                     }
                 case "2":
                     ArrayList<String> blocked = currentUser.getBlocked();
