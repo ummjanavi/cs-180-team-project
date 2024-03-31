@@ -163,7 +163,6 @@ public class MainApplication {
 
         if (!(oldPassword.equals(currentUser.getPassword()))) {
             System.out.println("Incorrect Password. Try again");
-            System.out.println(currentUser.getPassword());
             return;
         }
         System.out.println("Enter your new password");
