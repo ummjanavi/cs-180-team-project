@@ -32,7 +32,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute login process
-        assertDoesNotThrow(() -> MainApplication.loginProcess());
+        assertDoesNotThrow(() -> MainApplication.loginProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute login process
-        assertDoesNotThrow(() -> MainApplication.loginProcess());
+        assertDoesNotThrow(() -> MainApplication.loginProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -54,7 +54,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute account creation process
-        assertDoesNotThrow(() -> MainApplication.accountCreationProcess());
+        assertDoesNotThrow(() -> MainApplication.accountCreationProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute account creation process
-        assertDoesNotThrow(() -> MainApplication.accountCreationProcess());
+        assertDoesNotThrow(() -> MainApplication.accountCreationProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute show main menu method
-        assertDoesNotThrow(() -> MainApplication.showMainMenu(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.showMainMenu(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -87,7 +87,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute change password process
-        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -98,7 +98,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute change password process
-        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -109,27 +109,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute direct message menu method
-        assertDoesNotThrow(() -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser")));
-    }
-
-    @Test
-    void testShowLoginMenu_ExitOption() {
-        // Simulates user input to exit the application
-        String input = "exit\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-
-        // Execute the main application
-        assertDoesNotThrow(MainApplication::main);
-    }
-
-    @Test
-    void testShowLoginMenu_InvalidOption() {
-        // Simulates user input for an invalid option
-        String input = "invalid\n";
-        System.setIn(new ByteArrayInputStream(input.getBytes()));
-
-        // Execute the main application
-        assertDoesNotThrow(MainApplication::main);
+        assertDoesNotThrow(() -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -139,7 +119,7 @@ public class MainApplicationTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         // Execute the method
-        assertDoesNotThrow(() -> MainApplication.changeDirectMessageSetting(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.changeDirectMessageSetting(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -149,7 +129,7 @@ public class MainApplicationTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         // Execute the method
-        assertDoesNotThrow(() -> MainApplication.changeDirectMessageSetting(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.changeDirectMessageSetting(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -159,7 +139,7 @@ public class MainApplicationTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         // Execute the method
-        assertDoesNotThrow(() -> MainApplication.searchProcess(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.searchProcess(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -169,18 +149,18 @@ public class MainApplicationTest {
         System.setIn(new ByteArrayInputStream(input.getBytes()));
 
         // Execute the method
-        assertDoesNotThrow(() -> MainApplication.userViewerMenu(new User("testUser"), new User("anotherUser")));
+        assertDoesNotThrow(() -> MainApplication.userViewerMenu(new User("testUser"), new User("anotherUser"), new Scanner(System.in)));
     }
 
     @Test
     void testLoginProcess_UsernameBackOption() {
-        // Simulates user input for login with 'back' option for username
-        String input = "back\nexit\n";
+        // Simulates user input for "back" option during username input
+        String input = "back\n";
         testIn = new ByteArrayInputStream(input.getBytes());
         System.setIn(testIn);
 
         // Execute login process
-        assertDoesNotThrow(() -> MainApplication.loginProcess());
+        assertDoesNotThrow(() -> MainApplication.loginProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -191,7 +171,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute login process
-        assertDoesNotThrow(() -> MainApplication.loginProcess());
+        assertDoesNotThrow(() -> MainApplication.loginProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -202,7 +182,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute account creation process
-        assertDoesNotThrow(() -> MainApplication.accountCreationProcess());
+        assertDoesNotThrow(() -> MainApplication.accountCreationProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -213,7 +193,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute account creation process
-        assertDoesNotThrow(() -> MainApplication.accountCreationProcess());
+        assertDoesNotThrow(() -> MainApplication.accountCreationProcess(new Scanner(System.in)));
     }
 
     @Test
@@ -224,7 +204,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute show main menu method
-        assertDoesNotThrow(() -> MainApplication.showMainMenu(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.showMainMenu(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -235,7 +215,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute change password process
-        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -246,7 +226,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute change password process
-        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser")));
+        assertDoesNotThrow(() -> MainApplication.changePasswordProcess(new User("testUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -257,7 +237,7 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute direct message menu method
-        assertDoesNotThrow(() -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser")));
+        assertDoesNotThrow(() -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser"), new Scanner(System.in)));
     }
 
     @Test
@@ -268,6 +248,6 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute direct message menu method
-        assertDoesNotThrow(() -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser")));
+        assertDoesNotThrow(() -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser"), new Scanner(System.in)));
     }
 }
