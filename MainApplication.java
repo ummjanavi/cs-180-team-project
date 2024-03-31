@@ -1,20 +1,20 @@
 import java.util.*;
 
 public class MainApplication {
-    private static Scanner scan = new Scanner(System.in);
     private static LoginMethods loginMethods = new LoginMethods();
     private static searchMethods searchMethods = new searchMethods();
     private static directMessageMethods directMessageMethods = new directMessageMethods();
 
 
     public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
         // Repeatedly show the login menu until the application is exited
         while (true) {
-            showLoginMenu();
+            showLoginMenu(scan);
         }
     } //main()
 
-    private static void showLoginMenu() {
+    private static void showLoginMenu(Scanner scan) {
         // Presenting Login Menu Options
         System.out.println("\nLogin Menu");
         System.out.println("1. Login");
@@ -30,10 +30,10 @@ public class MainApplication {
 
         switch (choice) {
             case "1":
-                loginProcess();
+                loginProcess(scan);
                 break;
             case "2":
-                accountCreationProcess();
+                accountCreationProcess(scan);
                 break;
             default:
                 System.out.println("Invalid choice. Please try again.");
@@ -41,7 +41,7 @@ public class MainApplication {
         }
     } //showLoginMenu()
 
-    private static void loginProcess() {
+    private static void loginProcess(Scanner scan) {
         System.out.println("Enter username or enter 'back' to return to the Login Menu:");
         String username = scan.nextLine().trim();
         if ("back".equalsIgnoreCase(username)) {
@@ -56,14 +56,14 @@ public class MainApplication {
 
         if (loginMethods.validateLogin(username, password)) {
             User currentUser = new User(username);
-            showMainMenu(currentUser); // Transition to main menu after successful login
+            showMainMenu(currentUser, scan); // Transition to main menu after successful login
         } else {
             return;
         }
 
     } //loginProcess()
 
-    private static void accountCreationProcess() {
+    private static void accountCreationProcess(Scanner scan) {
         System.out.println("Enter your desired username or enter 'back' to return to the Login Menu:");
         String username = scan.nextLine().trim();
 
@@ -90,7 +90,7 @@ public class MainApplication {
 
     } //accountCreationProcess
 
-    private static void showMainMenu(User currentUser) {
+    private static void showMainMenu(User currentUser, Scanner scan) {
         String choice;
         do {
             System.out.println("\nMain Menu");
@@ -103,11 +103,11 @@ public class MainApplication {
 
             switch (choice) {
                 case "1":
-                    searchProcess(currentUser);
+                    searchProcess(currentUser, scan);
                     break;
                 case "2":
                     // Placeholder for account settings functionality
-                    showAccountSettings(currentUser);
+                    showAccountSettings(currentUser, scan);
                     break;
                 case "3":
                     System.out.println("Logging out...");
@@ -120,7 +120,7 @@ public class MainApplication {
         } while (!choice.equals("3")); // This loop will continue until the user chooses to logout
     } //showMainMenu
 
-    public static void showAccountSettings(User currentUser) {
+    public static void showAccountSettings(User currentUser, Scanner scan) {
         String choice;
         do {
             System.out.println("\nAccount Settings");
@@ -133,10 +133,10 @@ public class MainApplication {
 
             switch (choice) {
                 case "1":
-                    changePasswordProcess(currentUser);
+                    changePasswordProcess(currentUser, scan);
                     break;
                 case "2":
-                    changeDirectMessageSetting(currentUser);
+                    changeDirectMessageSetting(currentUser, scan);
                     break;
                 case "3":
                     System.out.println("Returning...");
@@ -149,7 +149,7 @@ public class MainApplication {
 
     } //showAccountSettings
 
-    public static void changePasswordProcess(User currentUser) {
+    public static void changePasswordProcess(User currentUser, Scanner scan) {
         System.out.println("To change your password, enter your old password.");
         System.out.println("or enter 'back' to return");
         String oldPassword = scan.nextLine().trim();
@@ -179,7 +179,7 @@ public class MainApplication {
         }
     } //changePasswordProcess()
 
-    public static void changeDirectMessageSetting(User currentUser) {
+    public static void changeDirectMessageSetting(User currentUser, Scanner scan) {
         String choice;
         do {
             System.out.println("Direct Messaging Privacy Choices:");
@@ -219,7 +219,7 @@ public class MainApplication {
         } while (!choice.equals("3"));
     } //directMessageSettings
 
-    public static void searchProcess(User currentUser) {
+    public static void searchProcess(User currentUser, Scanner scan) {
         System.out.println("Search user or enter 'back' to return to main menu");
         String search = scan.nextLine().trim();
         if (search.equals("back")) {
@@ -248,7 +248,7 @@ public class MainApplication {
                         String selectedUser = results.get(userNumber);
                         User searchedUser = new User(selectedUser);
                         searchedUser.displayProfile();
-                        userViewerMenu(currentUser, searchedUser);
+                        userViewerMenu(currentUser, searchedUser, scan);
                         break;
                     } else {
                         // Number not in the list
@@ -261,7 +261,7 @@ public class MainApplication {
         }
     } //searchProcess()
 
-    public static void userViewerMenu(User currentUser, User searchedUser) {
+    public static void userViewerMenu(User currentUser, User searchedUser, Scanner scan) {
         String choice;
         do {
             System.out.println("1. Add/Remove User as friend.");
@@ -346,7 +346,7 @@ public class MainApplication {
                     }
                     break;
                 case "3":
-                    directMessageMenu(currentUser, searchedUser);
+                    directMessageMenu(currentUser, searchedUser, scan);
                     break;
                 case "4":
                     System.out.println("Returning...");
@@ -359,7 +359,7 @@ public class MainApplication {
 
     } //userViewerMenu
 
-    public static void directMessageMenu(User currentUser, User searchedUser) {
+    public static void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
         ArrayList<String> currentUserBlocked = currentUser.getBlocked();
         if (currentUserBlocked == null) {
             currentUserBlocked = new ArrayList<>();
@@ -394,7 +394,7 @@ public class MainApplication {
             }
             return;
         }
-        
+
         String choice;
         do {
             if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
@@ -469,6 +469,4 @@ public class MainApplication {
 
         } while (!choice.equals("3"));
     }
-
-
 } // End class
