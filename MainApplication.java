@@ -274,26 +274,39 @@ public class MainApplication {
 
             switch (choice) {
                 case "1":
-                    if (currentUser.getBlocked().contains(searchedUser.getUsername())) {
+                    ArrayList<String> currentUserBlocked = currentUser.getBlocked();
+                    if (currentUserBlocked == null) {
+                        currentUserBlocked = new ArrayList<>();
+                    }
+
+                    if (currentUserBlocked.contains(searchedUser.getUsername())) {
                         System.out.println("Cannot add " + searchedUser.getUsername() + " since they are blocked.");
                         break;
                     }
+
                     ArrayList<String> searchedUserBlocked = searchedUser.getBlocked();
-                    if (searchedUserBlocked != null && searchedUserBlocked.contains(currentUser.getUsername())) {
+                    if (searchedUserBlocked == null) {
+                        searchedUserBlocked = new ArrayList<>();
+                    }
+
+                    if (searchedUserBlocked.contains(currentUser.getUsername())) {
                         System.out.println("Cannot add " + searchedUser.getUsername() + " as a friend because you are blocked.");
                         break;
                     }
+
                     ArrayList<String> searchedFriends = searchedUser.getFriends();
                     if (searchedFriends == null) {
                         searchedFriends = new ArrayList<>();
                     }
+
                     ArrayList<String> currentFriends = currentUser.getFriends();
                     if (currentFriends == null) {
                         currentFriends = new ArrayList<>();
                     }
-                    if (currentFriends.contains(searchedUser.getUsername())) {
-                        currentFriends.remove(searchedUser.getUsername());
-                        if (!currentUser.writeToFile()) {
+
+                    if (currentFriends.contains(searchedUser.getUsername())) { // if they are friends
+                        currentFriends.remove(searchedUser.getUsername()); // remove the user
+                        if (!currentUser.writeToFile()) { //write to user
                             currentFriends.add(searchedUser.getUsername());
                             System.out.println("Action not completed");
                         } else {
@@ -319,7 +332,7 @@ public class MainApplication {
                     if (friends == null) {
                         friends = new ArrayList<>();
                     }
-                    
+
                     if (blocked.contains(searchedUser.getUsername())) { // already blocked
                         blocked.remove(searchedUser.getUsername()); // removed from blocked list
                         if (!currentUser.writeToFile()) {
