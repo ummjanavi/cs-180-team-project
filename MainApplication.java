@@ -315,6 +315,11 @@ public class MainApplication {
                     if (blocked == null) {
                         blocked = new ArrayList<>();
                     }
+                    ArrayList<String> friends = currentUser.getFriends();
+                    if (friends == null) {
+                        friends = new ArrayList<>();
+                    }
+                    
                     if (blocked.contains(searchedUser.getUsername())) { // already blocked
                         blocked.remove(searchedUser.getUsername()); // removed from blocked list
                         if (!currentUser.writeToFile()) {
@@ -325,10 +330,10 @@ public class MainApplication {
                         System.out.println("Successfully unblocked " + searchedUser.getUsername());
                     } else {
                         blocked.add(searchedUser.getUsername()); // if not on list, block them
-                        currentUser.getFriends().remove(searchedUser.getUsername());
+                        friends.remove(searchedUser.getUsername());
                         if (!currentUser.writeToFile()) {
                             blocked.remove(searchedUser.getUsername()); // if fails, remove
-                            currentUser.getFriends().add(searchedUser.getUsername());
+                            friends.add(searchedUser.getUsername());
                             System.out.println("Action not completed");
                             break;
                         } else { // if it didnt fail
