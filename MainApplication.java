@@ -376,11 +376,20 @@ public class MainApplication {
     } //userViewerMenu
 
     public static void directMessageMenu(User currentUser, User searchedUser) {
-        if (currentUser.getBlocked().contains(searchedUser.getUsername())) {
+        ArrayList<String> currentUserBlocked = currentUser.getBlocked();
+        if (currentUserBlocked == null) {
+            currentUserBlocked = new ArrayList<>();
+        }
+        ArrayList<String> searchedUserBlocked = currentUser.getBlocked();
+        if (searchedUserBlocked == null) {
+            searchedUserBlocked = new ArrayList<>();
+        }
+
+        if (currentUserBlocked.contains(searchedUser.getUsername())) {
             System.out.println("You cannot message this user. You have the recipient blocked.");
             return;
         }
-        if (searchedUser.getBlocked().contains(currentUser.getUsername())) {
+        if (searchedUserBlocked.contains(currentUser.getUsername())) {
             System.out.println("You cannot message this user.");
             return;
         }
