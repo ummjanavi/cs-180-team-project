@@ -151,7 +151,7 @@ public class User {
         return retThis;
     }
     public boolean writeToFile() { // writes user data to their file. returns false if failed
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(username + ".txt", false))) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.username + ".txt", false))) {
             bw.write(this.username + '\n'); // I need these new like characters right?
             bw.write(this.password + '\n');
             if (this.profilePic != null) {
@@ -188,5 +188,3 @@ public class User {
     } //displayProfile
 
 }
-
-
