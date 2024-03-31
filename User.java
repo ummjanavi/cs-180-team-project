@@ -91,15 +91,7 @@ public class User {
         return profilePic;
     }
     public void setProfilePic(String uploadedFilePath) {
-        String newFileName = this.username + "ProfilePic.jpg";
-        File newFile = new File(newFileName);
-        try {
-            Files.copy(Paths.get(uploadedFilePath), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            this.profilePic = newFileName;
-        } catch (IOException e) {
-            System.out.println("Failed to update profile picture: " + e.getMessage());
-        }
-        this.profilePic = profilePic;
+        this.profilePic = uploadedFilePath;
     }
     public boolean isOpenMessaging() {
         return openMessaging;
@@ -189,23 +181,12 @@ public class User {
         }
     } //writeToFile
 
-    public void displayProfile() {  // could change to return boolean
-        ImageIcon icon = new ImageIcon(this.profilePic);
-        JFrame jf = new JFrame("Profile");
-        jf.setSize(300, 350);
-        jf.setResizable(false);
-        jf.setLocationRelativeTo(null);
-        jf.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    public void displayProfile() {     // could change to return boolean
+        System.out.println("==================================");
+        System.out.println(this.getUsername());
+        System.out.println("==================================");
+    } //displayProfile
 
-        JLabel profile = new JLabel(icon);
-        JLabel userInfo = new JLabel(this.username, SwingConstants.CENTER);
-        JLabel title = new JLabel(this.username + "'s Profile", SwingConstants.CENTER);
-
-        jf.getContentPane().add(title, BorderLayout.NORTH);
-        jf.getContentPane().add(profile, BorderLayout.CENTER);
-        jf.getContentPane().add(userInfo, BorderLayout.SOUTH);
-        profile.setHorizontalAlignment(JLabel.CENTER);
-        jf.getContentPane().add(profile, BorderLayout.CENTER);
-        jf.setVisible(true);
-    }
 }
+
+
