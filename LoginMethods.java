@@ -2,8 +2,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
 
-public class LoginMethods {
-
+public class LoginMethods implements LoginInterface {
 //        public boolean checkUsername(String username) {
 //            try {
 //                FileReader fr = new FileReader("ummjanavi.txt");
