@@ -386,19 +386,27 @@ public class MainApplication {
             return;
         }
         if (searchedUserBlocked.contains(currentUser.getUsername())) {
-            System.out.println("You cannot message this user.");
-            return;
-        }
-        if (!searchedUser.isOpenMessaging() && !currentUser.getFriends().contains(searchedUser.getUsername())) {
-            System.out.println("You cannot message this user.");
+            System.out.println("You cannot message this user. The recipient has you blocked.");
             return;
         }
 
-        if (!currentUser.isOpenMessaging() && !currentUser.getFriends().contains(searchedUser.getUsername())) {
-            System.out.println("You cannot message this user. You have open messaging disabled.");
+        if (!searchedUser.isOpenMessaging() && (!currentUser.getFriends().contains(searchedUser.getUsername()) || !searchedUser.getFriends().contains(currentUser.getUsername()))) {
+            System.out.println("You cannot message this user. You are not friends. The recipient has open messaging disabled.");
+            if (searchedUser.getFriends().contains(currentUser.getUsername())) {
+                System.out.println("The recipient has sent you a friend request.\nExit to the main menu to search and add " + searchedUser.getUsername() + " back.");
+            }
             return;
         }
-        // messages are ambiguous to prevent some sleuthing LOL
+
+
+        if (!currentUser.isOpenMessaging() && (!currentUser.getFriends().contains(searchedUser.getUsername()) || !searchedUser.getFriends().contains(currentUser.getUsername()))) {
+            System.out.println("You cannot message this user. You are not friends. You have open messaging disabled.");
+            if (searchedUser.getFriends().contains(currentUser.getUsername())) {
+                System.out.println("The recipient has sent you a friend request.\nExit to the main menu to search and add " + searchedUser.getUsername() + " back.");
+            }
+            return;
+        }
+        
         String choice;
         do {
             if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
