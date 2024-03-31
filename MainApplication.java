@@ -129,8 +129,7 @@ public class MainApplication {
             System.out.println("\nAccount Settings");
             System.out.println("1. Change account password");
             System.out.println("2. Change direct messaging privacy");
-            System.out.println("3. Update profile picture");
-            System.out.println("4. Return to Main Menu");
+            System.out.println("3. Return to Main Menu");
             System.out.println("Enter choice:");
 
             choice = scan.nextLine().trim();
@@ -143,18 +142,13 @@ public class MainApplication {
                     changeDirectMessageSetting(currentUser);
                     break;
                 case "3":
-                    updateProfilePictureProcess(currentUser);
-                    break;
-                case "4":
                     System.out.println("Returning...");
                     break;
                 default:
                     System.out.println("Invalid choice. Please try again.");
                     break;
             }
-
-
-        } while (!choice.equals("4"));
+        } while (!choice.equals("3"));
 
     } //showAccountSettings
 
@@ -169,7 +163,6 @@ public class MainApplication {
 
         if (!(oldPassword.equals(currentUser.getPassword()))) {
             System.out.println("Incorrect Password. Try again");
-            System.out.println(oldPassword);
             System.out.println(currentUser.getPassword());
             return;
         }
@@ -230,63 +223,44 @@ public class MainApplication {
         } while (!choice.equals("3"));
     } //directMessageSettings
 
-    public static void updateProfilePictureProcess(User currentUser) {
-        SwingUtilities.invokeLater(() -> {
-            JFileChooser fileChooser = new JFileChooser();
-            fileChooser.setDialogTitle("Select Profile Picture");
-            fileChooser.setAcceptAllFileFilterUsed(false);
-            fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Image Files", "jpg",
-                    "jpeg", "png"));
-            int result = fileChooser.showOpenDialog(null);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                File selectedFile = fileChooser.getSelectedFile();
-                String filePath = selectedFile.getAbsolutePath();
-                String oldPic = currentUser.getProfilePic();
-                currentUser.setProfilePic(filePath);
-                if (!currentUser.writeToFile()) {
-                    currentUser.setProfilePic(oldPic);
-                    System.out.println("Failed to update profile picture.");
-                }
-            } else {
-                System.out.println("No file was selected");
-            }
-        });
-    } //updateProfilePictureProcess()
-
     public static void searchProcess(User currentUser) {
-        System.out.println("Search:");
+        System.out.println("Search user or enter 'back' to return to main menu");
         String search = scan.nextLine().trim();
-        ArrayList<String> results = searchMethods.searchUsers(search);
-        results.remove(currentUser.getUsername());
-        if (results.isEmpty()) {
-            System.out.println("No matched users");
-            return;
+        if (search.equals("back")) {
+            System.out.println("Returning...");
         } else {
-            for (int i = 0; i < results.size(); i++) {
-                System.out.println((i + 1) + ". " + results.get(i));
-            }
-        }
-        while (true) {
-            System.out.println("Enter the number of the user you want to select, or type 'back' to return:");
-            String userNumberStr = scan.nextLine().trim();
-            if ("back".equalsIgnoreCase(userNumberStr)) {
+            ArrayList<String> results = searchMethods.searchUsers(search);
+            results.remove(currentUser.getUsername());
+            if (results.isEmpty()) {
+                System.out.println("No matched users");
                 return;
-            }
-            try {
-                int userNumber = Integer.parseInt(userNumberStr) - 1; // Convert to 0-based index
-                if (userNumber >= 0 && userNumber < results.size()) {
-                    // Valid selection, proceed with userViewer or similar
-                    String selectedUser = results.get(userNumber);
-                    User searchedUser = new User(selectedUser);
-                    searchedUser.displayProfile();
-                    userViewerMenu(currentUser, searchedUser);
-                    break;
-                } else {
-                    // Number not in the list
-                    System.out.println("Error: Selection out of range. Please try again.");
+            } else {
+                for (int i = 0; i < results.size(); i++) {
+                    System.out.println((i + 1) + ". " + results.get(i));
                 }
-            } catch (NumberFormatException e) {
-                System.out.println("Error: Invalid input. Please enter a number.");
+            }
+            while (true) {
+                System.out.println("Enter the number of the user you want to select, or type 'back' to return:");
+                String userNumberStr = scan.nextLine().trim();
+                if ("back".equalsIgnoreCase(userNumberStr)) {
+                    return;
+                }
+                try {
+                    int userNumber = Integer.parseInt(userNumberStr) - 1; // Convert to 0-based index
+                    if (userNumber >= 0 && userNumber < results.size()) {
+                        // Valid selection, proceed with userViewer or similar
+                        String selectedUser = results.get(userNumber);
+                        User searchedUser = new User(selectedUser);
+                        searchedUser.displayProfile();
+                        userViewerMenu(currentUser, searchedUser);
+                        break;
+                    } else {
+                        // Number not in the list
+                        System.out.println("Error: Selection out of range. Please try again.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Error: Invalid input. Please enter a number.");
+                }
             }
         }
     } //searchProcess()
@@ -386,6 +360,7 @@ public class MainApplication {
                             break;
                         }
                     }
+                    break;
                 case "3":
                     directMessageMenu(currentUser, searchedUser);
                     break;
@@ -407,9 +382,16 @@ public class MainApplication {
         }
         if (searchedUser.getBlocked().contains(currentUser.getUsername())) {
             System.out.println("You cannot message this user.");
+            return;
         }
         if (!searchedUser.isOpenMessaging() && !currentUser.getFriends().contains(searchedUser.getUsername())) {
             System.out.println("You cannot message this user.");
+            return;
+        }
+
+        if (!currentUser.isOpenMessaging() && !currentUser.getFriends().contains(searchedUser.getUsername())) {
+            System.out.println("You cannot message this user. You have open messaging disabled.");
+            return;
         }
         // messages are ambiguous to prevent some sleuthing LOL
         String choice;
@@ -435,10 +417,11 @@ public class MainApplication {
                     String message = scan.nextLine();
                     if ("back".equalsIgnoreCase(message)) {
                         return; // Return to showLoginMenu
-                    }
-                    if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
-                        System.out.println("Error sending message.");
-                        break;
+                    } else {
+                        if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
+                            System.out.println("Error sending message.");
+                            break;
+                        }
                     }
                     break;
                 case "2":
@@ -450,7 +433,7 @@ public class MainApplication {
                             "return:");
                     String deleteIndexStr = scan.nextLine().trim();
                     if ("back".equalsIgnoreCase(deleteIndexStr)) {
-                        return; // Return to showLoginMenu
+                        return;
                     }
                     int deleteIndex;
                     try {
@@ -460,6 +443,12 @@ public class MainApplication {
                             break;
                         }
                     } catch (NumberFormatException e) {
+                        System.out.println("Error: Invalid input. Please enter a number.");
+                        break;
+                    }
+                    String messageToDelete = messages.get(deleteIndex);
+                    if (messageToDelete.contains(searchedUser.getUsername())) {
+                        System.out.println("Cannot delete message that is not your own.");
                         break;
                     }
                     messages.remove(deleteIndex);
@@ -478,7 +467,7 @@ public class MainApplication {
             }
 
         } while (!choice.equals("3"));
-    } //directMessagingMenu()
+    }
 
 
 } // End class
