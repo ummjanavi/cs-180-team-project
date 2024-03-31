@@ -35,3 +35,4 @@ Class descriptions
 2. LoginMethods.java contains all the methods for a successful login. It checks if a username is taken and creates new files for new accounts. It also ensures the password being used to login matches the password the program has.
 3. User.java handles all methods related to a user's account settings. It reads the user's text file and provides information on user settings and privacy. The methods in this class include writing and updating information in a user's text file such as password and profile picture changes.
 4. DirectMessageMethods.java contains all methods related to sending, recieving and deleting messages. This method reads from a text file that holds all contents of a conversation between two users and updated the conversations everytime the user wants to send or delete a message.
+5. SearchMethods.java contains a singular method that is used to search for a user.
