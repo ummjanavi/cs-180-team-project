@@ -26,4 +26,12 @@ After being propmted the main menu, the user will have the option to search for 
        4. Return to Main Menu: If the user choses to return to main menu, the main menu options will be displayed.
 3. Logout: If the user choses to logout they will be prompted with the login menu and their information and messages will be saved for the next time they login
 Once being presented with the login menu, if the user choses to end the program, they should type "exit" and terminate the program.
+
+Submissions
+Submitted on bright space by: name
    
+Class descriptions
+1. MainApplication.java contains the main method and calls all the methods from the other classes to assist in running the program. It displays all the menus and takes in the users input. It also catches any errors to assure a smooth program. This classes also consists of many methods, however, they call methods from other classes inside of them. This class displays each menu in a loop until the user choses to exit. MainApplication.java is crucial to running a smooth and convenient program for the user.
+2. LoginMethods.java contains all the methods for a successful login. It checks if a username is taken and creates new files for new accounts. It also ensures the password being used to login matches the password the program has.
+3. User.java handles all methods related to a user's account settings. It reads the user's text file and provides information on user settings and privacy. The methods in this class include writing and updating information in a user's text file such as password and profile picture changes.
+4. DirectMessageMethods.java contains all methods related to sending, recieving and deleting messages. This method reads from a text file that holds all contents of a conversation between two users and updated the conversations everytime the user wants to send or delete a message.
