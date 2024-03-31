@@ -11,7 +11,7 @@ public class LoginMethods {
 //                String line = bfr.readLine();
 //                while (line != null) {
 //                    if (line.equals(username)) {
-//                        //System.out.println("Username taken! Please chose another.");
+//                        //System.out.println("Username taken! Please choose another.");
 //                        return false;
 //                    }
 //                }
