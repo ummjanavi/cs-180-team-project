@@ -13,8 +13,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
-
-
+/**
+ * UserTest.java
+ * 
+ * A class to test the fields, constructors, and methods.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 public class UserTest {
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(TestCaseUser.class);
