@@ -4,6 +4,7 @@ import java.io.InputStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -71,7 +72,7 @@ public class MainApplicationTest {
     @Test
     void testShowMainMenu_ValidChoice() {
         // Simulates user input for main menu choice
-        String input = "1\n3\n";
+        String input = "1\nback\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
         System.setIn(testIn);
 
