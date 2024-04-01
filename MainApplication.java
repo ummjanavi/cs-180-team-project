@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class MainApplication {
+public class MainApplication implements MainInterface {
     private static LoginMethods loginMethods = new LoginMethods();
     private static searchMethods searchMethods = new searchMethods();
     private static directMessageMethods directMessageMethods = new directMessageMethods();
