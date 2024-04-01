@@ -135,5 +135,14 @@ public class DirectMessageMethodsTests {
                 String result = Ex.toString();
             }
         }
+        
+        @Test
+        public void testDirectMessageMethodsImplementsDirectMessageInterface() {
+        // Create an instance of SearchMethods
+        DirectMessageMethods directMessageMethods = new DirectMessageMethods();
+
+        // Check if SearchMethods implements SearchInterface
+        assertTrue(directMessageMethods instanceof DirectMessageInterface, "DirectMessageMethods should implement DirectMessagInterface");
+    }
     }
 }
