@@ -2,6 +2,17 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * User.java
+ * 
+ * Represents a user in the application with associated login credentials, profile settings, and friend lists.
+ * Provides methods for user authentication, profile management, and file I/O operations.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
+
 public class User implements UserInterface {
     private String username; // username of this user
     private String password; // password of this user
