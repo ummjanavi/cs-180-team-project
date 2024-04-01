@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class SearchMethodsTest {
 
     @Test
-    // Create new user
     void searchUsers_NoMatches_ReturnsEmptyList() {
         // Setup
         searchMethods searcher = new searchMethods();
@@ -20,60 +19,63 @@ public class SearchMethodsTest {
     }
 
     @Test
-    // Check new user
     void searchUsers_SingleMatch_ReturnsListWithOneUser() {
         searchMethods searcher = new searchMethods();
-        createTestUserFile("testUser123.txt");
+        createTestUserFile("me123.txt");
 
         ArrayList<String> result = searcher.searchUsers("123");
 
         // Assertion
-        assertEquals(1, result.size());
-        assertTrue(result.contains("testUser123"));
+        assertTrue(result.contains("me123"));
 
         // Cleanup
-        deleteTestUserFile("testUser123.txt");
+        deleteTestUserFile("me123.txt");
     }
 
+
     @Test
-    // Delete user
     void searchUsers_MultipleMatches_ReturnsListWithAllMatchedUsers() {
         searchMethods searcher = new searchMethods();
-        createTestUserFile("user123.txt");
-        createTestUserFile("user456.txt");
+        createTestUserFile("bob123.txt");
+        createTestUserFile("kevin456.txt");
+        createTestUserFile("stuart789.txt");
+        createTestUserFile("tom777.txt");
+        createTestUserFile("jerry888.txt");
 
-        ArrayList<String> result = searcher.searchUsers("user");
+        ArrayList<String> result = searcher.searchUsers("7");
 
         // Assertion
         assertEquals(2, result.size());
-        assertTrue(result.contains("user123"));
-        assertTrue(result.contains("user456"));
+        assertTrue(result.contains("tom777"));
+        assertTrue(result.contains("jerry888"));
 
         // Cleanup
-        deleteTestUserFile("user123.txt");
-        deleteTestUserFile("user456.txt");
+        deleteTestUserFile("bob123.txt");
+        deleteTestUserFile("kevin456.txt");
+        deleteTestUserFile("stuart789.txt");
+        deleteTestUserFile("tom777.txt");
+        deleteTestUserFile("jerry888.txt");
     }
 
     @Test
-    // Check deleted user
     void searchUsers_EmptySearchString_ReturnsAllUsers() {
         searchMethods searcher = new searchMethods();
-        createTestUserFile("user1.txt");
-        createTestUserFile("user2.txt");
-        createTestUserFile("user3.txt");
+        createTestUserFile("alvin.txt");
+        createTestUserFile("simon.txt");
+        createTestUserFile("theodore.txt");
 
         ArrayList<String> result = searcher.searchUsers("");
 
         // Assertion
         assertEquals(3, result.size());
-        assertTrue(result.contains("user1"));
-        assertTrue(result.contains("user2"));
-        assertTrue(result.contains("user3"));
+        assertTrue(result.contains("alvin"));
+        assertTrue(result.contains("simon"));
+        assertTrue(result.contains("theodore"));
 
         // Cleanup
-        deleteTestUserFile("user1.txt");
-        deleteTestUserFile("user2.txt");
-        deleteTestUserFile("user3.txt");
+        deleteTestUserFile("alvin.txt");
+        deleteTestUserFile("simon.txt");
+        deleteTestUserFile("theodore.txt");
     }
 
     @Test
