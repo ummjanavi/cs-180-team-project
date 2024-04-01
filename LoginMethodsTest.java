@@ -7,6 +7,15 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+/**
+ * LoginMethodsTest.java
+ * 
+ * This class tests all the methods in LoginMethods, validating that every method works as intended.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 
 public class LoginMethodsTest {
 
