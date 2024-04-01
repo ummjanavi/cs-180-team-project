@@ -1,83 +1,136 @@
-import java.io.*;
-import java.nio.Buffer;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.JUnitCore;
+import org.junit.runner.Result;
+import org.junit.runner.notification.Failure;
 
-public class directMessageMethods {
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-    public String getFileName(User currentUser, User searchedUser) {
-        ArrayList<String> names = new ArrayList<>();
-        names.add(currentUser.getUsername());
-        names.add(searchedUser.getUsername());
+import static org.junit.Assert.assertEquals;
 
-        // Sort the names alphabetically
-        Collections.sort(names);
-
-        return names.get(0) + names.get(1) + "Messages.txt";
-    } //getFileName
-    public boolean openMessages(User currentUser, User searchedUser) {
-        String fileName = getFileName(currentUser, searchedUser);
-        File messageFile = new File(fileName);
-
-        if (!messageFile.exists()) {
-            try {
-                messageFile.createNewFile();
-            } catch (IOException e) {
-                return false;
-            }
-        }
-        return true;
-    } //openMessages
-
-    public List<String> readMessages(User currentUser, User searchedUser) {
-        String fileName = getFileName(currentUser, searchedUser);
-        List<String> messages = new ArrayList<>();
-        try (BufferedReader bfr = new BufferedReader((new FileReader(fileName)))) {
-            String line;
-            while ((line = bfr.readLine()) != null) {
-                messages.add(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading message file.");
-        }
-        return messages;
-    } //readMessages
-
-    public boolean displayMessages(List<String> messages) {
-        if (messages.isEmpty()) {
-            return false;
+public class DirectMessageMethodsTests {
+    public static void main(String[] args) {
+        Result result = JUnitCore.runClasses(TestCase.class);
+        System.out.printf("Test Count: %d.\n", result.getRunCount());
+        if (result.wasSuccessful()) {
+            System.out.printf("Excellent - all local tests ran successfully.\n");
         } else {
-            System.out.println("==================================");
-            for (int i = 0; i < messages.size(); i++) {
-                System.out.println((i+1) + "." + messages.get(i));
+            System.out.printf("Tests failed: %d.\n", result.getFailureCount());
+            for (Failure failure : result.getFailures()) {
+                System.out.println(failure.toString());
             }
-            System.out.println("==================================");
         }
-        return true;
-    } //display messages
+    }
 
-    public boolean sendMessage(User currentUser, User searchedUser, String message) {
-        String formattedMessage = currentUser.getUsername() + ": " + message;
-        String fileName = getFileName(currentUser, searchedUser);
-        try (BufferedWriter bfw = new BufferedWriter(new FileWriter(fileName, true))) {
-            bfw.write(formattedMessage + "\n");
-        } catch (IOException e) {
-            return false;
+    public static class TestCase {
+        private final PrintStream originalOutput = System.out;
+        private final InputStream originalSysin = System.in;
+
+        @SuppressWarnings("FieldCanBeLocal")
+        private ByteArrayInputStream testIn;
+
+        @SuppressWarnings("FieldCanBeLocal")
+        private ByteArrayOutputStream testOut;
+
+        @Before
+        public void outputStart() {
+            testOut = new ByteArrayOutputStream();
+            System.setOut(new PrintStream(testOut));
         }
-        return true;
-    } //sendMessage()
 
-    public boolean writeMessages(User currentUser, User searchedUser, List<String> messages) {
-        String fileName = getFileName(currentUser, searchedUser);
-        try (BufferedWriter bfw = new BufferedWriter(new FileWriter(fileName))) {
-            for (String message : messages) {
-                bfw.write(message + "\n");
+        @After
+        public void restoreInputAndOutput() {
+            System.setIn(originalSysin);
+            System.setOut(originalOutput);
+        }
+
+        private String getOutput() {
+            return testOut.toString();
+        }
+
+        @SuppressWarnings("SameParameterValue")
+        private void receiveInput(String str) {
+            testIn = new ByteArrayInputStream(str.getBytes());
+            System.setIn(testIn);
+        }
+
+        // this will cover getFileName too
+        // Message will be read via file
+        @Test(timeout = 1000)
+        public void openMessagesTest() {
+            // Set the input
+            String input = "1\narushichaudhary\nTest123\n1\nTest03312024023437\n1\n3\n1\nhello again\n";
+
+            String expected = "1. arushichaudhary: hello again";
+            // Runs the program with the input values
+            receiveInput(input);
+            MainApplication.main(new String[0]);
+            // Retrieves the output from the program
+            String output = getOutput();
+            // Trims the output and verifies it is correct.
+            expected = expected.replaceAll("\r\n", "\n");
+            output = output.replaceAll("\r\n", "\n");
+            assertEquals("Direct Message Options:\n" + "1. Send Message\n" +
+                            "2. Delete Message\n" +
+                            "3. Exit\n",
+                    expected.trim(), output.trim());
+        }
+
+        @Test(timeout = 1000)
+        public void readMessagesTest() {
+            try {
+                // Set the input
+                String input = "1\narushichaudhary\nTest123\n1\nTest03312024023437\n1\n3\n1\ntesting\n";
+
+                String expected = "2. arushichaudhary: testing";
+                // Runs the program with the input values
+                receiveInput(input);
+                MainApplication.main(new String[0]);
+                // Retrieves the output from the program
+                String output = getOutput();
+
+                // Trims the output and verifies it is correct.
+                expected = expected.replaceAll("\r\n", "\n");
+                output = output.replaceAll("\r\n", "\n");
+                assertEquals("Direct Message Options:\n" + "1. Send Message\n" +
+                                "2. Delete Message\n" +
+                                "3. Exit\n",
+                        expected.trim(), output.trim());
+            } catch (Exception Ex) {
+                String resutl = Ex.toString();
             }
-        } catch (IOException e) {
-            return false;
         }
-        return true;
-    } //writeMessages
 
-} //end class
+        // this will cover all the test cases or methods
+        @Test(timeout = 1000)
+        public void sendMessagesTest() {
+            try {
+                // Set the input
+                String input = "1\narushichaudhary\nTest123\n1\nTest03312024023437\n1\n3\n1\nSending a new message\n";
+
+                String expected = "3. arushichaudhary: Sending a new message";
+                // Runs the program with the input values
+                receiveInput(input);
+                MainApplication.main(new String[0]);
+                // Retrieves the output from the program
+                String output = getOutput();
+
+                // Trims the output and verifies it is correct.
+                expected = expected.replaceAll("\r\n", "\n");
+                output = output.replaceAll("\r\n", "\n");
+                assertEquals("Direct Message Options:\n" + "1. Send Message\n" +
+                                "2. Delete Message\n" +
+                                "3. Exit\n",
+                        expected.trim(), output.trim());
+            } catch (Exception Ex) {
+                String resutl = Ex.toString();
+            }
+        }
+    }
+}
