@@ -1,6 +1,14 @@
 import java.io.File;
 import java.util.ArrayList;
-
+/**
+ * SearchMethods.java
+ * 
+ * This class contains all the methods needed for searching a user.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 public class SearchMethods implements SearchInterface {
     public ArrayList<String> searchUsers(String search) {
         File dir = new File("."); // Assuming user files are in the current directory
