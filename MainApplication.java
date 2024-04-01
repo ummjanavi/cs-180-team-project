@@ -82,6 +82,7 @@ public class MainApplication {
 
         if (loginMethods.createAccount(username, password)) { //if the account is created successfully
             System.out.println("Account Created Successfully. Sign in using 'Login'");
+            new User(username, password);
         } else {
             System.out.println("There was an error creating your account. Please try again.");
         }
