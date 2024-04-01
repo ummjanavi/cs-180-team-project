@@ -1,24 +1,16 @@
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-
+/**
+ * LoginMethods.java
+ * 
+ * This class has all of the methods needed for a user to log into the app.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 public class LoginMethods implements LoginInterface {
-//        public boolean checkUsername(String username) {
-//            try {
-//                FileReader fr = new FileReader("ummjanavi.txt");
-//                BufferedReader bfr = new BufferedReader(fr);
-//                String line = bfr.readLine();
-//                while (line != null) {
-//                    if (line.equals(username)) {
-//                        //System.out.println("Username taken! Please choose another.");
-//                        return false;
-//                    }
-//                }
-//            } catch (Exception e) {
-//                return false;
-//            }
-//            return true;
-//        }
 
     public boolean checkUsername(String username) {
         File userFile = new File(username + ".txt");
