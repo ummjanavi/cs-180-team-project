@@ -1,10 +1,12 @@
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Scanner;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import java.util.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
@@ -13,20 +15,20 @@ public class MainApplicationTest {
     private final InputStream systemIn = System.in;
     private ByteArrayInputStream testIn;
 
-    @BeforeEach
+    @Before
     public void setUpInput() {
 
         System.setIn(testIn);
     }
 
-    @AfterEach
+    @After
     public void restoreSystemInputOutput() {
 
         System.setIn(systemIn);
     }
 
     @Test
-    void testLoginProcess_ValidCredentials() {
+    public void testLoginProcess_ValidCredentials() {
         // Simulates user input for login
         String input = "testUser\n" + "testPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -37,7 +39,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testLoginProcess_InvalidCredentials() {
+    public void testLoginProcess_InvalidCredentials() {
         // Simulates user input for login with invalid password
         String input = "testUser\n" + "wrongPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -48,7 +50,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testAccountCreationProcess_Success() {
+    public void testAccountCreationProcess_Success() {
         // Simulates user input for creating an account
         String input = "newUser\n" + "newPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -59,7 +61,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testAccountCreationProcess_Failure() {
+    public void testAccountCreationProcess_Failure() {
         // Simulates user input for creating an account with existing username
         String input = "existingUser\n" + "newPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -70,7 +72,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testShowMainMenu_ValidChoice() {
+    public void testShowMainMenu_ValidChoice() {
         // Simulates user input for main menu choice
         String input = "1\nback\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -81,7 +83,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testChangePasswordProcess_Success() {
+    public void testChangePasswordProcess_Success() {
         // Simulates user input for changing password
         String input = "testPassword\n" + "newPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -92,7 +94,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testChangePasswordProcess_Failure() {
+    public void testChangePasswordProcess_Failure() {
         // Simulates user input for changing password with incorrect old password
         String input = "wrongPassword\n" + "newPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -103,7 +105,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testDirectMessageMenu_ValidChoice() {
+    public void testDirectMessageMenu_ValidChoice() {
         // Simulates user input for direct message menu choice
         String input = "1\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -114,7 +116,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testChangeDirectMessageSetting_ValidChoice() {
+    public void testChangeDirectMessageSetting_ValidChoice() {
         // Simulates user input for changing direct message privacy
         String input = "1\n3\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -124,7 +126,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testChangeDirectMessageSetting_InvalidChoice() {
+    public void testChangeDirectMessageSetting_InvalidChoice() {
         // Simulates user input for an invalid choice
         String input = "invalid\n3\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -134,7 +136,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testSearchProcess_NoMatch() {
+    public void testSearchProcess_NoMatch() {
         // Simulates user input for searching with no match
         String input = "nonexistentUser\nback\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -144,7 +146,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testUserViewerMenu_InvalidChoice() {
+    public void testUserViewerMenu_InvalidChoice() {
         // Simulates user input for an invalid choice in user viewer menu
         String input = "invalid\n4\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -154,7 +156,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testLoginProcess_UsernameBackOption() {
+    public void testLoginProcess_UsernameBackOption() {
         // Simulates user input for "back" option during username input
         String input = "back\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -165,7 +167,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testLoginProcess_PasswordBackOption() {
+    public void testLoginProcess_PasswordBackOption() {
         // Simulates user input for login with 'back' option for password
         String input = "testUser\nback\nexit\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -176,7 +178,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testAccountCreationProcess_UsernameBackOption() {
+    public void testAccountCreationProcess_UsernameBackOption() {
         // Simulates user input for creating an account with 'back' option for username
         String input = "back\nexit\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -187,7 +189,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testAccountCreationProcess_PasswordBackOption() {
+    public void testAccountCreationProcess_PasswordBackOption() {
         // Simulates user input for creating an account with 'back' option for password
         String input = "newUser\nback\nexit\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -198,7 +200,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testShowMainMenu_InvalidChoice() {
+    public void testShowMainMenu_InvalidChoice() {
         // Simulates user input for main menu with invalid choice
         String input = "invalid\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -209,7 +211,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testChangePasswordProcess_OldPasswordBackOption() {
+    public void testChangePasswordProcess_OldPasswordBackOption() {
         // Simulates user input for changing password with 'back' option for old password
         String input = "back\nexit\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -220,7 +222,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testChangePasswordProcess_NewPasswordBackOption() {
+    public void testChangePasswordProcess_NewPasswordBackOption() {
         // Simulates user input for changing password with 'back' option for new password
         String input = "testPassword\nback\nexit\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -231,7 +233,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testDirectMessageMenu_SendMessageBackOption() {
+    public void testDirectMessageMenu_SendMessageBackOption() {
         // Simulates user input for direct message menu with 'back' option for sending a message
         String input = "1\nback\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -242,7 +244,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    void testDirectMessageMenu_DeleteMessageBackOption() {
+    public void testDirectMessageMenu_DeleteMessageBackOption() {
         // Simulates user input for direct message menu with 'back' option for deleting a message
         String input = "2\nback\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
