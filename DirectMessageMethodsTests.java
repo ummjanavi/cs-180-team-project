@@ -15,7 +15,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
-
+/**
+ * DirectMessageMethodsTests.java
+ * 
+ * This class tests the direct message methods validating that the methods work as intended.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 @RunWith(Enclosed.class)
 public class DirectMessageMethodsTests {
     public static void main(String[] args) {
