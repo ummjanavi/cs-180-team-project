@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 /**
  * SearchMethodsTest.java
- * 
+ *
  * This class tests all the methods in SearchMethod.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class SearchMethodsTest {
 
     @Test
-    void searchUsers_NoMatches_ReturnsEmptyList() {
+    void searchUsersNoMatchesReturnsEmptyList() {
         // Setup
         searchMethods searcher = new searchMethods();
 
@@ -31,7 +31,7 @@ public class SearchMethodsTest {
     }
 
     @Test
-    void searchUsers_SingleMatch_ReturnsListWithOneUser() {
+    void searchUsersSingleMatchReturnsListWithOneUser() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("me123.txt");
 
@@ -46,7 +46,7 @@ public class SearchMethodsTest {
 
 
     @Test
-    void searchUsers_MultipleMatches_ReturnsListWithAllMatchedUsers() {
+    void searchUsersMultipleMatchesReturnsListWithAllMatchedUsers() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("bob123.txt");
         createTestUserFile("kevin456.txt");
@@ -70,7 +70,7 @@ public class SearchMethodsTest {
     }
 
     @Test
-    void searchUsers_EmptySearchString_ReturnsAllUsers() {
+    void searchUsersEmptySearchStringReturnsAllUsers() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("alvin.txt");
         createTestUserFile("simon.txt");
@@ -91,7 +91,7 @@ public class SearchMethodsTest {
     }
 
     @Test
-    void searchUsers_SearchStringWithMessagesUser_ReturnsEmptyList() {
+    void searchUsersSearchStringWithMessagesUserReturnsEmptyList() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("userWithMessages.txt");
 
