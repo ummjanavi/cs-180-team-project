@@ -3,6 +3,15 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+/**
+ * DirectMessageMethods.java
+ * 
+ * This class has all the direct message methods, used when a user wants to message another user.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 
 public class DirectMessageMethods implements DirectMessageInterface {
 
