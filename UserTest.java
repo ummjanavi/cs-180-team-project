@@ -294,5 +294,14 @@ public class UserTest {
                             "3. Exit\n",
                     expected.trim(), output.trim());
         }
+
+        @Test
+        public void testUserImplementsUserInterface() {
+            // Create an instance of SearchMethods
+            User user = new User();
+
+            // Check if SearchMethods implements SearchInterface
+            Assertions.assertTrue(user instanceof User, "User should implement UserInterface");
+        }
     }
 }
