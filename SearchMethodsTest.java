@@ -110,4 +110,13 @@ public class SearchMethodsTest {
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void testSearchMethodsImplementsSearchInterface() {
+        // Create an instance of SearchMethods
+        SearchMethods searchMethods = new SearchMethods();
+
+        // Check if SearchMethods implements SearchInterface
+        assertTrue(searchMethods instanceof SearchInterface, "SearchMethods should implement SearchInterface");
+    }
 }
