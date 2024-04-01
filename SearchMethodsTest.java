@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 /**
- * LoginMethods.java
+ * SearchMethodsTest.java
  * 
  * This class tests all the methods in SearchMethod.
  *
