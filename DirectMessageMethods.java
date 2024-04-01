@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class directMessageMethods implements DirectMessageInterface {
+public class DirectMessageMethods implements DirectMessageInterface {
 
     public String getFileName(User currentUser, User searchedUser) {
         ArrayList<String> names = new ArrayList<>();
