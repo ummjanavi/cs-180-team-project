@@ -28,7 +28,7 @@ After being prompted the main menu, the user will have the option to search for 
 Once presented with the login menu, if the user chooses to end the program, they should type "exit" and terminate the program.
 
 Submissions
-Submitted on bright space by: name
+Submitted on bright space by: Johanna
    
 Class descriptions
 1. MainApplication.java contains the main method and calls all the methods from the other classes to assist in running the program. It displays all the menus and takes in the users input. It also catches any errors to assure a smooth program. This classes also consists of many methods, however, they call methods from other classes inside of them. This class displays each menu in a loop until the user chooses to exit. MainApplication.java is crucial to running a smooth and convenient program for the user. We created test cases for this class in MainApplicationTest.java. These test cases include login in with a valid password, loging in with an invalid password, creating an account with valid inputs, creative an account with invalid inputs (an existing username), changing a password successfully, changing a password insuccessfully, exiting program, changing direct message privacy, invalid search, going back to a menu by typing "back", as well as invalid inputs.
