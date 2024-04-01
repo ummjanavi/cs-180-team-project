@@ -9,7 +9,15 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-
+/**
+ * MainApplicationTest.java
+ * 
+ * This class tests the MainApplication class and validates that the MainApplication runs as intended. 
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 public class MainApplicationTest {
 
     private final InputStream systemIn = System.in;
