@@ -1,9 +1,9 @@
 import java.util.*;
 
-public class MainApplication implements MainInterface {
+public class MainApplication {
     private static LoginMethods loginMethods = new LoginMethods();
-    private static searchMethods searchMethods = new searchMethods();
-    private static directMessageMethods directMessageMethods = new directMessageMethods();
+    private static SearchMethods searchMethods = new SearchMethods();
+    private static DirectMessageMethods directMessageMethods = new DirectMessageMethods();
 
 
     public static void main(String[] args) {
@@ -511,7 +511,7 @@ public class MainApplication implements MainInterface {
                     }
                     messages.remove(deleteIndex);
                     if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
-                    System.out.println("Message deleted successfully");
+                        System.out.println("Message deleted successfully");
                     } else {
                         System.out.println("Could not delete message");
                     }
