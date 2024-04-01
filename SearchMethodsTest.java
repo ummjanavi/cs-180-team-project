@@ -1,7 +1,9 @@
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 public class SearchMethodsTest {
@@ -42,11 +44,11 @@ public class SearchMethodsTest {
         createTestUserFile("tom777.txt");
         createTestUserFile("jerry888.txt");
 
-        ArrayList<String> result = searcher.searchUsers("7");
+        ArrayList<String> result = searcher.searchUsers("r");
 
         // Assertion
         assertEquals(2, result.size());
-        assertTrue(result.contains("tom777"));
+        assertTrue(result.contains("stuart789"));
         assertTrue(result.contains("jerry888"));
 
         // Cleanup
@@ -95,17 +97,17 @@ public class SearchMethodsTest {
     // Helper methods for test setup and cleanup
     private void createTestUserFile(String fileName) {
         try {
-            File file = new File(fileName);
-            file.createNewFile();
+            Files.createFile(Paths.get(fileName));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     private void deleteTestUserFile(String fileName) {
-        File file = new File(fileName);
-        if (file.exists()) {
-            file.delete();
+        try {
+            Files.deleteIfExists(Paths.get(fileName));
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
