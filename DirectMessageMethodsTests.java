@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
 
-public class DirectMessageMethodsTest {
+public class DirectMessageMethodsTests {
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(TestCase.class);
         System.out.printf("Test Count: %d.\n", result.getRunCount());
