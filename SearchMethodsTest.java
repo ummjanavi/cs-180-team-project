@@ -7,6 +7,7 @@ import java.util.ArrayList;
 public class SearchMethodsTest {
 
     @Test
+    // Create new user
     void searchUsers_NoMatches_ReturnsEmptyList() {
         // Setup
         searchMethods searcher = new searchMethods();
@@ -19,6 +20,7 @@ public class SearchMethodsTest {
     }
 
     @Test
+    // Check new user
     void searchUsers_SingleMatch_ReturnsListWithOneUser() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("testUser123.txt");
@@ -34,6 +36,7 @@ public class SearchMethodsTest {
     }
 
     @Test
+    // Delete user
     void searchUsers_MultipleMatches_ReturnsListWithAllMatchedUsers() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("user123.txt");
@@ -52,6 +55,7 @@ public class SearchMethodsTest {
     }
 
     @Test
+    // Check deleted user
     void searchUsers_EmptySearchString_ReturnsAllUsers() {
         searchMethods searcher = new searchMethods();
         createTestUserFile("user1.txt");
