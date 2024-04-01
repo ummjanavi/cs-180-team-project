@@ -1,7 +1,7 @@
 import java.io.File;
 import java.util.ArrayList;
 
-public class searchMethods implements SearchInterface {
+public class SearchMethods implements SearchInterface {
     public ArrayList<String> searchUsers(String search) {
         File dir = new File("."); // Assuming user files are in the current directory
         File[] files = dir.listFiles();
