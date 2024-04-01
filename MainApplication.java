@@ -1,5 +1,13 @@
 import java.util.*;
-
+/**
+ * MainApplication.java
+ * 
+ * This class runs the app, Friendify. This is the main application. 
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 3/25/2024
+ */
 public class MainApplication {
     private static LoginMethods loginMethods = new LoginMethods();
     private static SearchMethods searchMethods = new SearchMethods();
