@@ -1,8 +1,10 @@
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
+import org.junit.runner.RunWith;
 import org.junit.runner.notification.Failure;
 
 import java.io.ByteArrayInputStream;
@@ -14,6 +16,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(Enclosed.class)
 public class DirectMessageMethodsTests {
     public static void main(String[] args) {
         Result result = JUnitCore.runClasses(TestCase.class);
@@ -129,7 +132,7 @@ public class DirectMessageMethodsTests {
                                 "3. Exit\n",
                         expected.trim(), output.trim());
             } catch (Exception Ex) {
-                String resutl = Ex.toString();
+                String result = Ex.toString();
             }
         }
     }
