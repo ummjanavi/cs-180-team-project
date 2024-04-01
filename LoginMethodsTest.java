@@ -114,4 +114,13 @@ public class LoginMethodsTest {
         File userFile = new File(username + ".txt");
         assertTrue(userFile.delete());
     }
+
+    @Test
+    public void testLoginMethodsImplementsLoginInterface() {
+        // Create an instance of SearchMethods
+        LoginMethods loginMethods = new LoginMethods();
+
+        // Check if SearchMethods implements SearchInterface
+        Assertions.assertTrue(loginMethods instanceof LoginMethods, "LoginMethods should implement LoginInterface");
+    }
 }
