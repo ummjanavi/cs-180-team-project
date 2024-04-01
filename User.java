@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public class User {
+public class User implements UserInterface {
     private String username; // username of this user
     private String password; // password of this user
     private String profilePic;  // file name of pfp
