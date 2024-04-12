@@ -1,8 +1,12 @@
+import java.io.*;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.channels.ScatteringByteChannel;
 import java.util.*;
 /**
  * MainApplication.java
- * 
- * This class runs the app, Friendify. This is the main application. 
+ *
+ * This class runs the app, Friendify. This is the main application.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
  * Lecture 1, Lab 10
@@ -15,10 +19,18 @@ public class MainApplication {
 
 
     public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in); // Scanner
-        while (true) {
-            showLoginMenu(scan);
-        } // Repeatedly show the login menu until the application is exited
+        try {
+            Socket serverSocket = new Socket("hostname", 4545);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
+            PrintWriter writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()));
+            Scanner scan = new Scanner(System.in); // Scanner
+            while (true) {
+                showLoginMenu(scan);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Repeatedly show the login menu until the application is exited
     } //main()
 
     private static void showLoginMenu(Scanner scan) {
@@ -310,7 +322,8 @@ public class MainApplication {
                     }
 
                     if (searchedUserBlocked.contains(currentUser.getUsername())) {
-                        System.out.println("Cannot add " + searchedUser.getUsername() + " as a friend because you are blocked.");
+                        System.out.println("Cannot add " + searchedUser.getUsername() +
+                                " as a friend because you are blocked.");
                         break; //breaks out of switch block, re displays view user options
                     }
 
@@ -325,7 +338,8 @@ public class MainApplication {
                     }
 
                     if (currentFriends.contains(searchedUser.getUsername())) { // if they are friends
-                        currentFriends.remove(searchedUser.getUsername());//remove searchedUser frm currentUser friends
+                        currentFriends.remove(searchedUser.getUsername());
+                        //remove searchedUser frm currentUser friends
                         if (!currentUser.writeToFile()) { //write to user, if fails, add searchedUser back
                             currentFriends.add(searchedUser.getUsername());
                             System.out.println("Action not completed");
@@ -368,12 +382,14 @@ public class MainApplication {
                         if (!currentUser.writeToFile()) { //write to currentUser file,
                             blocked.remove(searchedUser.getUsername()); // if fails, remove
                             if (removed) { // if searchedUser was removed from currentUser friends
-                                friends.add(searchedUser.getUsername()); //add searchedUser back to currentUser friends
+                                friends.add(searchedUser.getUsername());
+                                //add searchedUser back to currentUser friends
                             }
                             System.out.println("Action not completed");
                             break; //breaks out of switch block, re displays view user options
                         } else { // if writeToFile of current user didn't fail, update searchedUser friends
-                            ArrayList<String> searchedFriends1 = searchedUser.getFriends(); // remove from friends list
+                            ArrayList<String> searchedFriends1 = searchedUser.getFriends();
+                            // remove from friends list
                             if (searchedFriends1 != null && searchedFriends1.contains(currentUser.getUsername())) {
                                 searchedFriends1.remove(currentUser.getUsername());
                                 if (!searchedUser.writeToFile()) {
@@ -493,8 +509,8 @@ public class MainApplication {
                         System.out.println("There are no messages to delete.");
                         break; //breaks out of switch case, re displaying direct message options
                     }
-                    System.out.println("Enter the number next to the message you'd like to delete or enter 'back' to " +
-                            "return:");
+                    System.out.println("Enter the number next to the message you'd like to delete " +
+                            "or enter 'back' to return:");
                     String deleteIndexStr = scan.nextLine().trim();
                     if ("back".equalsIgnoreCase(deleteIndexStr)) {
                         return;
