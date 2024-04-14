@@ -1,3 +1,5 @@
+import com.sun.tools.javac.Main;
+
 import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -12,56 +14,68 @@ import java.util.*;
  * Lecture 1, Lab 10
  * @version 3/25/2024
  */
-public class MainApplication {
+public class MainApplication extends Thread {
     private static LoginMethods loginMethods = new LoginMethods();
     private static SearchMethods searchMethods = new SearchMethods();
     private static DirectMessageMethods directMessageMethods = new DirectMessageMethods();
+    private Socket socket;
+    private BufferedReader reader;
+    private PrintWriter writer;
 
+    public MainApplication(Socket socket) throws IOException {
+        this.socket = socket;
+        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+    } // constructor
 
-    public static void main(String[] args) {
-        Scanner scan = new Scanner(System.in); // Scanner
-        while (true) {
-            showLoginMenu(scan);
+    @Override
+    public void run() {
+        try (Scanner scan = new Scanner(System.in)){
+            while (!this.socket.isClosed()) {
+                showLoginMenu(scan);
+            }
+        } finally {
+            try {
+                if (writer != null) writer.close();
+                if (reader != null) reader.close();
+                if (socket != null) socket.close();
+            } catch (IOException f) {
+                System.out.println("Failed to close writer, reader, or socket.");
+            }
         }
+
         // Repeatedly show the login menu until the application is exited
     } //main()
 
-    private static void showLoginMenu(Scanner scan) {
+    private void showLoginMenu(Scanner scan) {
         // Presenting Login Menu Options
-        try {
-            Socket serverSocket = new Socket("hostname", 4545);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(serverSocket.getInputStream()));
-            PrintWriter writer = new PrintWriter(new OutputStreamWriter(serverSocket.getOutputStream()));
-            System.out.println("\nLogin Menu");
-            System.out.println("1. Login");
-            System.out.println("2. Create Account");
-            System.out.println("Enter choice, or type 'exit' to close application:");
+        System.out.println("\nLogin Menu");
+        System.out.println("1. Login");
+        System.out.println("2. Create Account");
+        System.out.println("Enter choice, or type 'exit' to close application:");
 
-            String choice = scan.nextLine().trim();// Getting user input, 'choice'
+        String choice = scan.nextLine().trim();// Getting user input, 'choice'
 
-            if ("exit".equalsIgnoreCase(choice)) {
-                System.out.println("Exiting application...");
-                System.exit(0); // Exit the application
-            } // if they type exit, ignores case
+        if ("exit".equalsIgnoreCase(choice)) {
+            System.out.println("Exiting application...");
+            socket.close();
+        } // if they type exit, ignores case
 
-            switch (choice) {
-                case "1": // "Login" option
-                    loginProcess(scan);
-                    break;
-                case "2": // "Create Account" option
-                    accountCreationProcess(scan);
-                    break;
-                default: // Neither option.
-                    System.out.println("Invalid choice. Please try again.");
-                    break; // Remains in the Login Menu, Re-displaying the options
-            }
-        } catch (IOException e) {
-
+        switch (choice) {
+            case "1": // "Login" option
+                loginProcess(scan);
+                break;
+            case "2": // "Create Account" option
+                accountCreationProcess(scan);
+                break;
+            default: // Neither option.
+                System.out.println("Invalid choice. Please try again.");
+                break; // Remains in the Login Menu, Re-displaying the options
         }
 
     } //showLoginMenu()
 
-    static void loginProcess(Scanner scan) {
+    private void loginProcess(Scanner scan) {
         System.out.println("Enter username or enter 'back' to return to the Login Menu:");
         String username = scan.nextLine().trim();
         if ("back".equalsIgnoreCase(username)) {
@@ -74,17 +88,19 @@ public class MainApplication {
             return; // Return to showLoginMenu
         }
 
+        //// THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         if (loginMethods.validateLogin(username, password)) {
             User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
             showMainMenu(currentUser, scan); // Transition to main menu after successful login
         }
     } //loginProcess()
 
-    static void accountCreationProcess(Scanner scan) {
+    private void accountCreationProcess(Scanner scan) {
         String username = scan.nextLine().trim();
         if ("back".equalsIgnoreCase(username)) {
             return; // Return to showLoginMenu
         }
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         if (!(loginMethods.checkUsername(username))) {
             return; //if login methods returns false (the username already exits), program returns to showLoginMenu
             // method writes error to terminal.
@@ -94,6 +110,7 @@ public class MainApplication {
         if ("back".equalsIgnoreCase(password)) {
             return; // Return to showLoginMenu
         }
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         if (loginMethods.createAccount(username, password)) { //if the account is created successfully
             System.out.println("Account Created Successfully. Sign in using 'Login'");
             new User(username, password);
@@ -103,7 +120,7 @@ public class MainApplication {
 
     } //accountCreationProcess
 
-    static void showMainMenu(User currentUser, Scanner scan) {
+    private void showMainMenu(User currentUser, Scanner scan) {
         String choice;
         do {
             // Showing main menu options
@@ -136,7 +153,8 @@ public class MainApplication {
         // This loop will continue until the user chooses "logout"
     } //showMainMenu
 
-    public static void showAccountSettings(User currentUser, Scanner scan) {
+    private void showAccountSettings(User currentUser, Scanner scan) {
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         String choice;
         do {
             // Showing account settings options
@@ -164,7 +182,8 @@ public class MainApplication {
         } while (!choice.equals("3"));
     } //showAccountSettings
 
-    public static void changePasswordProcess(User currentUser, Scanner scan) {
+    private static void changePasswordProcess(User currentUser, Scanner scan) {
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         System.out.println("To change your password, enter your old password.");
         System.out.println("or enter 'back' to return");
         String oldPassword = scan.nextLine().trim();
@@ -196,7 +215,8 @@ public class MainApplication {
 
     } //changePasswordProcess()
 
-    public static void changeDirectMessageSetting(User currentUser, Scanner scan) {
+    private static void changeDirectMessageSetting(User currentUser, Scanner scan) {
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         String choice;
         do {
             // Showing direct messaging setting options
@@ -240,7 +260,8 @@ public class MainApplication {
         } while (!choice.equals("3"));
     } //directMessageSettings
 
-    public static void searchProcess(User currentUser, Scanner scan) {
+    private static void searchProcess(User currentUser, Scanner scan) {
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         System.out.println("Search user or enter 'back' to return to main menu");
         String search = scan.nextLine().trim();
         if (search.equals("back")) {
@@ -284,7 +305,8 @@ public class MainApplication {
         }
     } //searchProcess()
 
-    public static void userViewerMenu(User currentUser, User searchedUser, Scanner scan) {
+    private static void userViewerMenu(User currentUser, User searchedUser, Scanner scan) {
+        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         String choice;
         do {
             // Showing user viewer options
@@ -296,7 +318,7 @@ public class MainApplication {
 
             choice = scan.nextLine().trim();
             switch (choice) {
-                case "1": // "Add/Remove" option.
+                case "1": // "Add/Remove" option. THIS NEEDS TO BE SYNCHRONIZED
                     ArrayList<String> currentUserBlocked = currentUser.getBlocked();
                     if (currentUserBlocked == null) { //currentUser doesnt have anyone blocked,
                         currentUserBlocked = new ArrayList<>(); // create an empty array to avoid null pointer
@@ -407,7 +429,7 @@ public class MainApplication {
 
     } //userViewerMenu
 
-    public static void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
+    private static void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
         ArrayList<String> currentUserBlocked = currentUser.getBlocked();
         if (currentUserBlocked == null) { //checking for null and re-assigning to avoid null pointers.
             currentUserBlocked = new ArrayList<>();
