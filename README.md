@@ -23,12 +23,12 @@ After being prompted the main menu, the user will have the option to search for 
          2. Open to just your friends: By chosing to open messages to just friends, only people whom the user has added as a friend will be able to message them.
          3. Cancel: By chosing to cancel, the account settings menu will be displayed
        3. Update profile picture: If the user chooses to update their profile picture they will be asked to upload a picture in the proper format.
-       4. Return to Main Menu: If the user chooses to return to the main menu, the main menu options will be displayed.
-3. Logout: If the user chooses to logout they will be prompted with the login menu and their information and messages will be saved for the next time they login
+       4. Notifications: Users can view notifications in the main menu. Notifications include friend requests, messages, and other relevant updates.
+          1. Friend requests: Users can see sent and received friend requests in their notification center.
+          2. Users can customize their notification settings, allowing them to choose which types of notifications they want to receive.
+       5. Return to Main Menu: If the user chooses to return to the main menu, the main menu options will be displayed.
+4. Logout: If the user chooses to logout they will be prompted with the login menu and their information and messages will be saved for the next time they login
 Once presented with the login menu, if the user chooses to end the program, they should type "exit" and terminate the program.
-
-Submissions
-Submitted on bright space by: Johanna
    
 Class descriptions
 1. MainApplication.java contains the main method and calls all the methods from the other classes to assist in running the program. It displays all the menus and takes in the users input. It also catches any errors to assure a smooth program. This classes also consists of many methods, however, they call methods from other classes inside of them. This class displays each menu in a loop until the user chooses to exit. MainApplication.java is crucial to running a smooth and convenient program for the user. We created test cases for this class in MainApplicationTest.java. These test cases include login in with a valid password, loging in with an invalid password, creating an account with valid inputs, creative an account with invalid inputs (an existing username), changing a password successfully, changing a password insuccessfully, exiting program, changing direct message privacy, invalid search, going back to a menu by typing "back", as well as invalid inputs.
@@ -36,3 +36,6 @@ Class descriptions
 3. User.java handles all methods related to a user's account settings. It is called in MainApplication.java in all sections related to account settings. It reads the user's text file and provides information on user settings and privacy. This class holds each user's friends and blocked users in two seperate array lists. The methods in this class include writing and updating information in a user's text file such as password and profile picture changes. We tested this class with UserTest.java. This class checks if the User.java's constructors work properly, if the getter and setters return the correct value, if the addFriend and removeFriend methods work, if the blockUser method works, as well as if the program correctly displays messages.
 4. DirectMessageMethods.java contains all methods related to sending, recieving and deleting messages. It is useful in MainAccount.java when the user is in the direct messages. This method reads from a text file that holds all contents of a conversation between two users and updated the conversations everytime the user wants to send or delete a message. This class displays the entire conversation between two users when a user is direct messaging someone. Every time a user sends, deletes, or recieves a message, this method updates the conversation and automatically redisplays it. We tested this class through directMethodsTest.java. This class tests all the getters and setters ti check if they return the correct value, checks if the program writes to the conversation text file properly, checks if the program takes in valid input values, and checks if the user can send a message properly.
 5. SearchMethods.java contains a singular method that is used to search for a user. It takes in the input and check if any usernames in the arraylist contain this input, then returns a list of usernames to the user. It is used in MainApplication.java when the user choses to search for another user. We testing this class through SearchMethodsTest.java. This class includes creating a new user and deleting a user.
+
+Group Accountability:
+Submissions Submitted on Brightspace by: Johanna
