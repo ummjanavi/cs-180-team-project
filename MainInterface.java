@@ -9,6 +9,11 @@ import java.util.Scanner;
  * @version 3/25/2024
  */
 public interface MainInterface {
+
+    public static void main(String[] args) {
+    }
+    public default void run() {
+    }
     private static void showLoginMenu() {
     }
     private static void loginProcess(Scanner scan) {
