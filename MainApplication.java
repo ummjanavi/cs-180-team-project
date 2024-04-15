@@ -1,3 +1,4 @@
+import com.sun.jdi.request.WatchpointRequest;
 import com.sun.tools.javac.Main;
 
 import java.io.*;
@@ -227,6 +228,7 @@ public class MainApplication extends Thread {
 
             currentUser.setPassword(newPassword);
             writer.write("WRITE_TO_FILE");
+            writer.write(currentUser.getUsername());
             writer.println();
             writer.flush();
             //if (currentUser.writeToFile()) {
@@ -260,15 +262,16 @@ public class MainApplication extends Thread {
                 boolean oldSetting = currentUser.isOpenMessaging();
                 switch (choice) {
                     case "1": //"Open to everyone"
-                        currentUser.setOpenMessaging(true);
-                        writer.write("SET_OPEN_MESSAGING");
-                        writer.write("true");
+                        //currentUser.setOpenMessaging(true);
+                        writer.write("SET_OPEN_MESSAGING_TRUE");
+                        writer.write(currentUser.getUsername());
                         writer.println();
                         writer.flush();
                         //if (!currentUser.writeToFile()) {
                         if (reader.readLine().equals("false")) {
-                            currentUser.setOpenMessaging(oldSetting);
+                            //currentUser.setOpenMessaging(oldSetting);
                             writer.write("SET_OPEN_MESSAGING");
+                            writer.write(currentUser.getUsername());
                             writer.write(String.valueOf(oldSetting));
                             writer.println();
                             writer.flush();
@@ -280,8 +283,8 @@ public class MainApplication extends Thread {
                         return; //returns back to showAccountSettings
                     case "2":
                         currentUser.setOpenMessaging(false);
-                        writer.write("SET_OPEN_MESSAGING");
-                        writer.write("false");
+                        writer.write("SET_OPEN_MESSAGING_FALSE");
+                        writer.write(currentUser.getUsername());
                         writer.println();
                         writer.flush();
                         if (reader.readLine().equals("false")) {
@@ -346,6 +349,7 @@ public class MainApplication extends Thread {
                         String selectedUser = results.get(userNumber);
                         User searchedUser = new User(selectedUser);
                         writer.write("DISPLAY_PROFILE");
+                        writer.write(selectedUser);
                         writer.println();
                         writer.flush();
                         //searchedUser.displayProfile();
@@ -564,16 +568,24 @@ public class MainApplication extends Thread {
             // if they are allowed to direct message! completes actions below.
             String choice;
             do {
-                if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
+                writer.write("OPEN_MESSAGES");
+                writer.write(currentUser.getUsername());
+                writer.write(searchedUser.getUsername());
+                writer.println();
+                writer.flush();
+                if (reader.readLine().equals("false")) {
+                //if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
                     System.out.println("Error creating message file.");
                     break; //
                 }
                 List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
-                writer.write("DISPLAY_MESSAGES");
+                writer.write("READ_MESSAGES");
+                writer.write(currentUser.getUsername());
+                writer.write(searchedUser.getUsername());
                 writer.println();
                 writer.flush();
                 if (reader.readLine().equals("false")) {
-                    //if (!directMessageMethods.displayMessages(messages)) {
+                //if (!directMessageMethods.displayMessages(messages)) {
                     System.out.println("No messages yet.");
                 }
                 // showing direct message options
@@ -591,6 +603,9 @@ public class MainApplication extends Thread {
                             return; // Return to showLoginMenu
                         } else { //anything but 'back'
                             writer.write("SEND_MESSAGE");
+                            writer.write(currentUser.getUsername());
+                            writer.write(searchedUser.getUsername());
+                            writer.write(message);
                             writer.println();
                             writer.flush();
                             if (reader.readLine().equals("false")) {
@@ -631,6 +646,8 @@ public class MainApplication extends Thread {
                         }
                         messages.remove(deleteIndex);
                         writer.write("WRITE_MESSAGES");
+                        writer.write(currentUser.getUsername());
+                        writer.write(searchedUser.getUsername());
                         writer.println();
                         writer.flush();
                         if (reader.readLine().equals("true")) {
@@ -649,6 +666,9 @@ public class MainApplication extends Thread {
                 }
 
             } while (!choice.equals("3"));
+            writer.write("exit");
+            writer.println();
+            writer.flush();
         } catch (IOException e) {
 
         }
