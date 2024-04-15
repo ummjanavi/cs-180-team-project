@@ -109,6 +109,9 @@ public class MainApplication extends Thread {
             return; // Return to showLoginMenu
         }
         writer.write("VALIDATE_LOGIN");
+        writer.println();
+        writer.write(username);
+        writer.println();
         writer.write(password);
         writer.println();
         writer.flush();
@@ -117,6 +120,9 @@ public class MainApplication extends Thread {
         if ((reader.readLine()).equals("true")) {
             User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
             showMainMenu(currentUser, scan); // Transition to main menu after successful login
+        } else {
+            System.out.println("Login failed. Incorrect username or password.\nReturning to Login Menu");
+            return;
         }
     } //loginProcess()
 
@@ -134,6 +140,7 @@ public class MainApplication extends Thread {
             writer.flush();
             // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
             if ((reader.readLine()).equals("false")) {
+                System.out.println ("Username taken! Please try again with another.");
                 return; //if login methods returns false (the username already exits), program returns to showLoginMenu
                 // method writes error to terminal.
             }
@@ -142,7 +149,9 @@ public class MainApplication extends Thread {
             if ("back".equalsIgnoreCase(password)) {
                 return; // Return to showLoginMenu
             }
-            writer.write("CHECK_USERNAME");
+            writer.write("CREATE_ACCOUNT");
+            writer.println();
+            writer.write(username);
             writer.println();
             writer.write(password);
             writer.println();
@@ -283,6 +292,10 @@ public class MainApplication extends Thread {
                     case "1": //"Open to everyone"
                         //currentUser.setOpenMessaging(true);
                         writer.write("SET_OPEN_MESSAGING_TRUE");
+                        writer.println();
+                        writer.write(currentUser.getUsername());
+                        writer.println();
+                        writer.write("WRITE_TO_FILE");
                         writer.println();
                         writer.write(currentUser.getUsername());
                         writer.println();
