@@ -2,18 +2,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * User.java
- * 
- * Represents a user in the application with associated login credentials, profile settings, and friend lists.
- * Provides methods for user authentication, profile management, and file I/O operations.
- *
- * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
- * Lecture 1, Lab 10
- * @version 3/25/2024
- */
-
-public class User implements UserInterface {
+public class User {
     private String username; // username of this user
     private String password; // password of this user
     private String profilePic;  // file name of pfp
@@ -153,7 +142,7 @@ public class User implements UserInterface {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(this.username + ".txt", false))) {
             bw.write(this.username + '\n'); // I need these new like characters right?
             bw.write(this.password + '\n');
-            if (this.profilePic != null) {
+            if (!this.profilePic.equals("default.jpg")) {
                 bw.write(this.profilePic + "\n");
             } else {
                 bw.write("default.jpg" + "\n");
@@ -173,17 +162,16 @@ public class User implements UserInterface {
             }
             bw.write(friendsStr + '\n');
             bw.write(blockedStr + '\n');
+            bw.flush();
             return true;
         } catch (IOException e) {
-           // System.out.println("Could not save " + this.username + "'s data to his/her file");
+            // System.out.println("Could not save " + this.username + "'s data to his/her file");
             return false;
         }
     } //writeToFile
 
-    public void displayProfile() {     // could change to return boolean
-        System.out.println("==================================");
-        System.out.println(this.getUsername());
-        System.out.println("==================================");
+    public String displayProfile() {     // could change to return boolean
+        return ("==================================\n" + this.getUsername() + "\n==================================");
     } //displayProfile
 
 }
