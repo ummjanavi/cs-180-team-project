@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 /**
  * UserInterface.java
- * 
+ *
  * This is the interface for the user class.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
@@ -20,11 +20,11 @@ public interface UserInterface {
     public void setFriends(ArrayList<String> friends);
     public ArrayList<String> getBlocked();
     public void setBlocked(ArrayList<String> blocked);
-    public void addFriend(TeamProject.User user);
-    public void removeFriend(TeamProject.User user);
-    public void blockUser(TeamProject.User user);
-    public void unblockUser(TeamProject.User user);
-    public boolean equals(TeamProject.User user);
+    public void addFriend(User user);
+    public void removeFriend(User user);
+    public void blockUser(User user);
+    public void unblockUser(User user);
+    public boolean equals(User user);
     public String toString(Boolean openMessaging);
     public String toString(ArrayList<String> usernames);
     public boolean writeToFile();
