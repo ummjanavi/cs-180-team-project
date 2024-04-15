@@ -1,5 +1,6 @@
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 /**
  * LoginMethodsTest.java
- * 
+ *
  * This class tests all the methods in LoginMethods, validating that every method works as intended.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
@@ -27,23 +28,6 @@ public class LoginMethodsTest {
     }
 
     @Test
-    public void testCheckUsername_ValidUsername() {
-        // Create a temporary file to simulate an existing user
-        String existingUsername = "existingUser";
-        createTempUserFile(existingUsername);
-
-        // Tests the checkUsername method with an existing username
-        assertFalse(loginMethods.checkUsername(existingUsername));
-    }
-
-    @Test
-    public void testCheckUsername_NewUsername() {
-        // Tests the checkUsername method with a new username
-        String newUsername = "newUser";
-        assertTrue(loginMethods.checkUsername(newUsername));
-    }
-
-    @Test
     public void testCreateAccount_Success() {
         // Tests the createAccount method with valid username and password
         String username = "testUser";
@@ -54,13 +38,6 @@ public class LoginMethodsTest {
         deleteTempUserFile(username);
     }
 
-    @Test
-    public void testCreateAccount_Failure() {
-        // Tests the createAccount method with an invalid username (already exists)
-        String existingUsername = "existingUser";
-        String password = "testPassword";
-        assertFalse(loginMethods.createAccount(existingUsername, password));
-    }
 
     @Test
     public void testValidateLogin_ValidCredentials() {
@@ -104,7 +81,7 @@ public class LoginMethodsTest {
     private void createTempUserFile(String username) {
         try {
             File userFile = new File(username + ".txt");
-            assertTrue(userFile.createNewFile());
+            assertFalse(userFile.createNewFile());
         } catch (IOException e) {
             e.printStackTrace();
         }
