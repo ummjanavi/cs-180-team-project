@@ -1,8 +1,10 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class AppServer implements ServerInterface {
 
@@ -53,8 +55,8 @@ public class AppServer implements ServerInterface {
                 writer.println();
                 writer.flush();
             } else if (input.equals("CREATE_ACCOUNT")) {
-                String password = reader.readLine();
                 username = reader.readLine();
+                String password = reader.readLine();
                 String output = String.valueOf(loginMethods.createAccount(username, password));
                 writer.write(output);
                 writer.println();
@@ -142,42 +144,42 @@ public class AppServer implements ServerInterface {
                     writer.println();
                     writer.flush();
                 } else {
-                ArrayList<String> searchedFriends = searchedUser.getFriends();
-                if (searchedFriends == null) { //if searchedUser doesnt have friends
-                    searchedFriends = new ArrayList<>(); //create empty array to avoid null pointer
-                }
-
-                ArrayList<String> currentFriends = currentUser.getFriends();
-                if (currentFriends == null) { //if currentUser doesnt have friends
-                    currentFriends = new ArrayList<>(); //create empty array to avoid null pointer
-                }
-
-                if (currentFriends.contains(searchedUser.getUsername())) { // if they are friends
-                    currentFriends.remove(searchedUser.getUsername());
-                    //remove searchedUser frm currentUser friends
-                    if (!currentUser.writeToFile()) { //write to user, if fails, add searchedUser back
-                        currentFriends.add(searchedUser.getUsername());
-                        writer.write("Action not completed");
-                        writer.println();
-                        writer.flush();
-                    } else {
-                        writer.write(searchedUser.getUsername() + " removed as a friend!");
-                        writer.println();
-                        writer.flush();
+                    ArrayList<String> searchedFriends = searchedUser.getFriends();
+                    if (searchedFriends == null) { //if searchedUser doesnt have friends
+                        searchedFriends = new ArrayList<>(); //create empty array to avoid null pointer
                     }
-                } else { // if they arent friends
-                    currentFriends.add(searchedUser.getUsername()); // add searchedUser to currentUser friends
-                    if (!currentUser.writeToFile()) { //write to user, if fails, remove searchedUser
+
+                    ArrayList<String> currentFriends = currentUser.getFriends();
+                    if (currentFriends == null) { //if currentUser doesnt have friends
+                        currentFriends = new ArrayList<>(); //create empty array to avoid null pointer
+                    }
+
+                    if (currentFriends.contains(searchedUser.getUsername())) { // if they are friends
                         currentFriends.remove(searchedUser.getUsername());
-                        writer.write("Action not completed");
-                        writer.println();
-                        writer.flush();
-                    } else {
-                        writer.write(searchedUser.getUsername() + " added as a friend!");
-                        writer.println();
-                        writer.flush();
+                        //remove searchedUser frm currentUser friends
+                        if (!currentUser.writeToFile()) { //write to user, if fails, add searchedUser back
+                            currentFriends.add(searchedUser.getUsername());
+                            writer.write("Action not completed");
+                            writer.println();
+                            writer.flush();
+                        } else {
+                            writer.write(searchedUser.getUsername() + " removed as a friend!");
+                            writer.println();
+                            writer.flush();
+                        }
+                    } else { // if they arent friends
+                        currentFriends.add(searchedUser.getUsername()); // add searchedUser to currentUser friends
+                        if (!currentUser.writeToFile()) { //write to user, if fails, remove searchedUser
+                            currentFriends.remove(searchedUser.getUsername());
+                            writer.write("Action not completed");
+                            writer.println();
+                            writer.flush();
+                        } else {
+                            writer.write(searchedUser.getUsername() + " added as a friend!");
+                            writer.println();
+                            writer.flush();
+                        }
                     }
-                }
                 }
             } else if (input.equals("BLOCK_USER")) {
                 String currentUserStr = reader.readLine();
