@@ -18,6 +18,9 @@ public class AppServer implements ServerInterface {
             ServerSocket serverSocket = new ServerSocket(Default_Port);
             System.out.println("Waiting for the client to connect...");
 
+            MainApplication m = new MainApplication(new Socket("localhost",4545));
+            m.start();
+
             try {
                 while(true) {
                     Socket socket = serverSocket.accept();
