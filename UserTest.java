@@ -68,11 +68,17 @@ public class UserTest {
             System.setIn(testIn);
         }
 
+        @Test(timeout = 1000)
+        public void userConstructorTest() {
+            // Test the constructor of User class
+            User user = new User("testUser", "password");
+            assertEquals("testUser", user.getUsername());
+            assertEquals("password", user.getPassword());
+        }
 
         @Test(timeout = 1000)
-        // This will cover all the USER constructors
-        // It will create a test user
-        // this will cover getProfilePic and setProfilePic testing
+        // Covers USER constructors
+        // Creates a test user
         public void UserTest() {
             try {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMddyyyyHHmmss");
