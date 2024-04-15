@@ -38,18 +38,30 @@ public class AppServer implements ServerInterface {
     }
 
     private static void handleClient(BufferedReader reader, PrintWriter writer) throws IOException {
-        boolean exit = false;
+        String input;
         do {
+            input = reader.readLine();
+            System.out.println("Received: " + input);
+            if (input == null || input.equals("exit")) {
+                break;
+            }
             String username = "";
-            String input = reader.readLine();
-            System.out.println("GOT HERE");
+            System.out.println(input);
             if (input.equals("CHECK_USERNAME")) {
                 username = reader.readLine();
                 String output = String.valueOf(loginMethods.checkUsername(username));
                 writer.write(output);
                 writer.println();
                 writer.flush();
+            } else if (input.equals("CREATE_ACCOUNT")) {
+                String password = reader.readLine();
+                username = reader.readLine();
+                String output = String.valueOf(loginMethods.createAccount(username, password));
+                writer.write(output);
+                writer.println();
+                writer.flush();
             } else if (input.equals("VALIDATE_LOGIN")) {
+                username = reader.readLine();
                 String password = reader.readLine();
                 String output = String.valueOf(loginMethods.validateLogin(username, password));
                 writer.write(output);
@@ -58,11 +70,13 @@ public class AppServer implements ServerInterface {
             } else if (input.equals("WRITE_TO_FILE")) {
                 username = reader.readLine();
                 User currentUser = new User(username);
-                Boolean output = currentUser.writeToFile();
+                System.out.println(username);
+                boolean output = currentUser.writeToFile();
                 writer.write(String.valueOf(output));
                 writer.println();
                 writer.flush();
             } else if (input.equals("SET_OPEN_MESSAGING_TRUE")) {
+                System.out.println("got here");
                 username = reader.readLine();
                 User currentUser = new User(username);
                 currentUser.setOpenMessaging(true);
@@ -110,9 +124,7 @@ public class AppServer implements ServerInterface {
                 writer.write(String.valueOf(output));
                 writer.println();
                 writer.flush();
-            } else if (input.equals("exit")) {
-                exit = true;
             }
-        } while (!exit);
+        } while (true);
     }
 }
