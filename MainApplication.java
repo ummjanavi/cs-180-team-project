@@ -482,6 +482,7 @@ public class MainApplication extends Thread {
             } else {
                 // if they are allowed to direct message! completes actions below.
                 String choice;
+                String answer = reader.readLine();
                 do {
                     writer.write("OPEN_MESSAGES");
                     writer.println();
@@ -490,12 +491,14 @@ public class MainApplication extends Thread {
                     writer.write(searchedUser.getUsername());
                     writer.println();
                     writer.flush();
-                    if (reader.readLine().equals("false")) {
+                    String answer2 = reader.readLine();
+                    //System.out.println("first " + answer2);
+                    if (answer2.equals("false")) {
                         //if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
                         System.out.println("Error creating message file.");
                         break; //
                     }
-                     List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
+                    List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
                     writer.write("READ_AND_DISPLAY_MESSAGES");
                     writer.println();
                     writer.write(currentUser.getUsername());
@@ -504,12 +507,14 @@ public class MainApplication extends Thread {
                     writer.println();
                     writer.flush();
 
-                    String messageCount = ("Message " + reader.readLine());
-                    System.out.println(messageCount);
+                    //String messageCount = ("Message " + reader.readLine());
+                    //System.out.println(messageCount);
+                    //System.out.println("second " + reader.readLine());
+                    int num = Integer.parseInt(reader.readLine());
                     System.out.println("==================================");
-//                    for (int i = 0; i < messageCount; i++) {
-//                        System.out.println(reader.readLine());
-//                    }
+                    for (int i = 0; i < num; i++) {
+                        System.out.println(reader.readLine());
+                    }
                     System.out.println("==================================");
 
                     // showing direct message options
@@ -566,11 +571,15 @@ public class MainApplication extends Thread {
                             }
 
                             String messageToDelete = messages.get(deleteIndex);
+                            //this might be a problem if user writes the searched users name intheir message
                             if (messageToDelete.contains(searchedUser.getUsername())) {
                                 System.out.println("Cannot delete message that is not your own.");
                                 break; //breaks out of switch case, re displaying direct message options
                             }
                             messages.remove(deleteIndex);
+                            //System.out.println("deleted " + messageToDelete);
+                            //messages.remove(messages.get(deleteIndex));
+
                             writer.write("WRITE_MESSAGES");
                             writer.println();
                             writer.write(currentUser.getUsername());
@@ -578,7 +587,10 @@ public class MainApplication extends Thread {
                             writer.write(searchedUser.getUsername());
                             writer.println();
                             writer.flush();
-                            if (reader.readLine().equals("true")) {
+                            String first = reader.readLine();
+                            String second = reader.readLine();
+                            //System.out.println("Second " + second);
+                            if (second.equals("true")) {
                                 //if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
                                 System.out.println("Message deleted successfully");
                             } else {
@@ -592,7 +604,7 @@ public class MainApplication extends Thread {
                             System.out.println("Invalid choice. Please try again.");
                             break; //breaks out of switch case, re displaying direct message options
                     }
-
+                    //break;
                 } while (!choice.equals("3"));
                 writer.write("exit");
                 writer.println();
