@@ -128,6 +128,7 @@ public class MainApplication extends Thread {
                 return; // Return to showLoginMenu
             }
             writer.write("CHECK_USERNAME");
+            writer.println();
             writer.write(username);
             writer.println();
             writer.flush();
@@ -142,6 +143,7 @@ public class MainApplication extends Thread {
                 return; // Return to showLoginMenu
             }
             writer.write("CHECK_USERNAME");
+            writer.println();
             writer.write(password);
             writer.println();
             writer.flush();
@@ -244,6 +246,7 @@ public class MainApplication extends Thread {
 
             currentUser.setPassword(newPassword);
             writer.write("WRITE_TO_FILE");
+            writer.println();
             writer.write(currentUser.getUsername());
             writer.println();
             writer.flush();
@@ -280,6 +283,7 @@ public class MainApplication extends Thread {
                     case "1": //"Open to everyone"
                         //currentUser.setOpenMessaging(true);
                         writer.write("SET_OPEN_MESSAGING_TRUE");
+                        writer.println();
                         writer.write(currentUser.getUsername());
                         writer.println();
                         writer.flush();
@@ -287,7 +291,9 @@ public class MainApplication extends Thread {
                         if (reader.readLine().equals("false")) {
                             //currentUser.setOpenMessaging(oldSetting);
                             writer.write("SET_OPEN_MESSAGING");
+                            writer.println();
                             writer.write(currentUser.getUsername());
+                            writer.println();
                             writer.write(String.valueOf(oldSetting));
                             writer.println();
                             writer.flush();
@@ -300,12 +306,14 @@ public class MainApplication extends Thread {
                     case "2":
                         currentUser.setOpenMessaging(false);
                         writer.write("SET_OPEN_MESSAGING_FALSE");
+                        writer.println();
                         writer.write(currentUser.getUsername());
                         writer.println();
                         writer.flush();
                         if (reader.readLine().equals("false")) {
                             currentUser.setOpenMessaging(oldSetting);
                             writer.write("SET_OPEN_MESSAGING");
+                            writer.println();
                             writer.write(String.valueOf(oldSetting));
                             writer.println();
                             writer.flush();
@@ -336,6 +344,7 @@ public class MainApplication extends Thread {
             System.out.println("Returning...");
         } else { // if user enters anything but 'back'
             writer.write("SEARCH_METHODS");
+            writer.println();
             writer.write(search);
             writer.println();
             writer.flush();
@@ -365,6 +374,7 @@ public class MainApplication extends Thread {
                         String selectedUser = results.get(userNumber);
                         User searchedUser = new User(selectedUser);
                         writer.write("DISPLAY_PROFILE");
+                        writer.println();
                         writer.write(selectedUser);
                         writer.println();
                         writer.flush();
@@ -585,7 +595,9 @@ public class MainApplication extends Thread {
             String choice;
             do {
                 writer.write("OPEN_MESSAGES");
+                writer.println();
                 writer.write(currentUser.getUsername());
+                writer.println();
                 writer.write(searchedUser.getUsername());
                 writer.println();
                 writer.flush();
@@ -596,7 +608,9 @@ public class MainApplication extends Thread {
                 }
                 List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
                 writer.write("READ_MESSAGES");
+                writer.println();
                 writer.write(currentUser.getUsername());
+                writer.println();
                 writer.write(searchedUser.getUsername());
                 writer.println();
                 writer.flush();
@@ -619,8 +633,11 @@ public class MainApplication extends Thread {
                             return; // Return to showLoginMenu
                         } else { //anything but 'back'
                             writer.write("SEND_MESSAGE");
+                            writer.println();
                             writer.write(currentUser.getUsername());
+                            writer.println();
                             writer.write(searchedUser.getUsername());
+                            writer.println();
                             writer.write(message);
                             writer.println();
                             writer.flush();
@@ -662,7 +679,9 @@ public class MainApplication extends Thread {
                         }
                         messages.remove(deleteIndex);
                         writer.write("WRITE_MESSAGES");
+                        writer.println();
                         writer.write(currentUser.getUsername());
+                        writer.println();
                         writer.write(searchedUser.getUsername());
                         writer.println();
                         writer.flush();
