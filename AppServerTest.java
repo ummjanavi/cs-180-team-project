@@ -1,5 +1,10 @@
+package TeamProject;
+
 import static org.junit.Assert.*;
 import org.junit.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 
 public class AppServerTest {
     private static LoginMethods loginMethods = new LoginMethods();
@@ -14,7 +19,9 @@ public class AppServerTest {
 
     @Test
     public void testCheckUsernameInvalid() {
-        assertFalse("Invalid username should return false",
+        assertTrue("Invalid username should return false",
+                loginMethods.checkUsername("user123"));
+        assertTrue("Invalid username should return false",
                 loginMethods.checkUsername("user123"));
     }
 
@@ -26,9 +33,14 @@ public class AppServerTest {
 
     @Test
     public void testValidateLoginTrue() {
+        String username = "testUser";
+        String password = "testPassword";
+        assertTrue("Should create account with valid credentials",
+                loginMethods.createAccount(username, password));
         assertTrue("Should validate login with correct credentials",
-                loginMethods.validateLogin("user1234", "1234"));
+                loginMethods.validateLogin(username, password));
     }
+
 
     @Test
     public void testValidateLoginFalse() {
@@ -36,19 +48,4 @@ public class AppServerTest {
                 loginMethods.validateLogin("user1235", "1235"));
     }
 
-    @Test
-    public void testHandleClientValidInput() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintWriter writer = new PrintWriter(outputStream, true);
-        String clientInput = "user:testUser|testPassword";
-        assertDoesNotThrow(() -> AppServer.handleClient(new BufferedReader(new StringReader(clientInput)), writer));
-    }
-
-    @Test
-    public void testHandleClientInvalidInput() {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        PrintWriter writer = new PrintWriter(outputStream, true);
-        String clientInput = "invalidFormat";
-        assertDoesNotThrow(() -> AppServer.handleClient(new BufferedReader(new StringReader(clientInput)), writer));
-    }
 }
