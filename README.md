@@ -24,10 +24,7 @@ After being prompted the main menu, the user will have the option to search for 
          2. Open to just your friends: By chosing to open messages to just friends, only people whom the user has added as a friend will be able to message them.
          3. Cancel: By chosing to cancel, the account settings menu will be displayed
        3. Update profile picture: If the user chooses to update their profile picture they will be asked to upload a picture in the proper format.
-       4. Notifications: Users can view notifications in the main menu. Notifications include friend requests, messages, and other relevant updates.
-          1. Friend requests: Users can see sent and received friend requests in their notification center.
-          2. Users can customize their notification settings, allowing them to choose which types of notifications they want to receive.
-       5. Return to Main Menu: If the user chooses to return to the main menu, the main menu options will be displayed.
+       4. Return to Main Menu: If the user chooses to return to the main menu, the main menu options will be displayed.
 4. Logout: If the user chooses to logout they will be prompted with the login menu and their information and messages will be saved for the next time they login
 Once presented with the login menu, if the user chooses to end the program, they should type "exit" and terminate the program.
    
