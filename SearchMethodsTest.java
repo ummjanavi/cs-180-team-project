@@ -21,7 +21,7 @@ public class SearchMethodsTest {
     @Test
     void searchUsersNoMatchesReturnsEmptyList() {
         // Setup
-        searchMethods searcher = new searchMethods();
+        SearchMethods searcher = new SearchMethods();
 
         // Execution
         ArrayList<String> result = searcher.searchUsers("xyz");
@@ -32,7 +32,7 @@ public class SearchMethodsTest {
 
     @Test
     void searchUsersSingleMatchReturnsListWithOneUser() {
-        searchMethods searcher = new searchMethods();
+        SearchMethods searcher = new SearchMethods();
         createTestUserFile("me123.txt");
 
         ArrayList<String> result = searcher.searchUsers("123");
@@ -47,7 +47,7 @@ public class SearchMethodsTest {
 
     @Test
     void searchUsersMultipleMatchesReturnsListWithAllMatchedUsers() {
-        searchMethods searcher = new searchMethods();
+        SearchMethods searcher = new SearchMethods();
         createTestUserFile("bob123.txt");
         createTestUserFile("kevin456.txt");
         createTestUserFile("stuart789.txt");
@@ -71,7 +71,7 @@ public class SearchMethodsTest {
 
     @Test
     void searchUsersEmptySearchStringReturnsAllUsers() {
-        searchMethods searcher = new searchMethods();
+        SearchMethods searcher = new SearchMethods();
         createTestUserFile("alvin.txt");
         createTestUserFile("simon.txt");
         createTestUserFile("theodore.txt");
@@ -92,7 +92,7 @@ public class SearchMethodsTest {
 
     @Test
     void searchUsersSearchStringWithMessagesUserReturnsEmptyList() {
-        searchMethods searcher = new searchMethods();
+        SearchMethods searcher = new SearchMethods();
         createTestUserFile("userWithMessages.txt");
 
         ArrayList<String> result = searcher.searchUsers("Messages");
