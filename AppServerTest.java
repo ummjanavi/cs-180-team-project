@@ -36,5 +36,19 @@ public class AppServerTest {
                 loginMethods.validateLogin("user1235", "1235"));
     }
 
-    // Add more test cases for other methods as per the requirements.
+    @Test
+    public void testHandleClientValidInput() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(outputStream, true);
+        String clientInput = "user:testUser|testPassword";
+        assertDoesNotThrow(() -> AppServer.handleClient(new BufferedReader(new StringReader(clientInput)), writer));
+    }
+
+    @Test
+    public void testHandleClientInvalidInput() {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintWriter writer = new PrintWriter(outputStream, true);
+        String clientInput = "invalidFormat";
+        assertDoesNotThrow(() -> AppServer.handleClient(new BufferedReader(new StringReader(clientInput)), writer));
+    }
 }
