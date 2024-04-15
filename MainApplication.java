@@ -5,10 +5,12 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.channels.ScatteringByteChannel;
+import java.sql.SQLOutput;
 import java.util.*;
+
 /**
  * MainApplication.java
- *
+ * <p>
  * This class runs the app, Friendify. This is the main application.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
@@ -45,7 +47,7 @@ public class MainApplication extends Thread {
 
     @Override
     public void run() {
-        try (Scanner scan = new Scanner(System.in)){
+        try (Scanner scan = new Scanner(System.in)) {
             while (!this.socket.isClosed()) {
                 showLoginMenu(scan);
             }
@@ -118,6 +120,7 @@ public class MainApplication extends Thread {
 
         //// THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         if ((reader.readLine()).equals("true")) {
+            System.out.println("Login Successful!");
             User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
             showMainMenu(currentUser, scan); // Transition to main menu after successful login
         } else {
@@ -140,7 +143,7 @@ public class MainApplication extends Thread {
             writer.flush();
             // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
             if ((reader.readLine()).equals("false")) {
-                System.out.println ("Username taken! Please try again with another.");
+                System.out.println("Username taken! Please try again with another.");
                 return; //if login methods returns false (the username already exits), program returns to showLoginMenu
                 // method writes error to terminal.
             }
@@ -191,7 +194,7 @@ public class MainApplication extends Thread {
                     break; // breaks out of switch, re-displays menu options
                 case "3": // "Logout" option.
                     System.out.println("Logging out...");
-                    currentUser.writeToFile();
+                    //currentUser.writeToFile();
                     break; // breaks out of switch, re-displays menu options
                 default: // if user inputs anything but the 3 choices
                     System.out.println("Invalid choice. Please try again.");
@@ -252,11 +255,12 @@ public class MainApplication extends Thread {
             if ("back".equalsIgnoreCase(newPassword)) {
                 return; // returns to showAccountSettings
             }
-
             currentUser.setPassword(newPassword);
-            writer.write("WRITE_TO_FILE");
+            writer.write("CHANGE_PASSWORD");
             writer.println();
             writer.write(currentUser.getUsername());
+            writer.println();
+            writer.write(newPassword);
             writer.println();
             writer.flush();
             //if (currentUser.writeToFile()) {
@@ -292,10 +296,6 @@ public class MainApplication extends Thread {
                     case "1": //"Open to everyone"
                         //currentUser.setOpenMessaging(true);
                         writer.write("SET_OPEN_MESSAGING_TRUE");
-                        writer.println();
-                        writer.write(currentUser.getUsername());
-                        writer.println();
-                        writer.write("WRITE_TO_FILE");
                         writer.println();
                         writer.write(currentUser.getUsername());
                         writer.println();
@@ -391,7 +391,9 @@ public class MainApplication extends Thread {
                         writer.write(selectedUser);
                         writer.println();
                         writer.flush();
-                        //searchedUser.displayProfile();
+                        System.out.println(reader.readLine());
+                        System.out.println(reader.readLine());
+                        System.out.println(reader.readLine());
                         userViewerMenu(currentUser, searchedUser, scan);
                         break; //breaks out of while loop after user is done with userViewerMenu
                     } else {
@@ -400,6 +402,8 @@ public class MainApplication extends Thread {
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Error: Invalid input. Please enter a number.");
+                } catch (IOException f) {
+                    System.out.println("Error reading from server");
                 }
             } //end while
         }
@@ -418,117 +422,31 @@ public class MainApplication extends Thread {
                 System.out.println("Enter choice:");
 
                 choice = scan.nextLine().trim();
+                String status = "";
                 switch (choice) {
                     case "1": // "Add/Remove" option. THIS NEEDS TO BE SYNCHRONIZED
-                        ArrayList<String> currentUserBlocked = currentUser.getBlocked();
-                        if (currentUserBlocked == null) { //currentUser doesnt have anyone blocked,
-                            currentUserBlocked = new ArrayList<>(); // create an empty array to avoid null pointer
-                        }
+                        writer.write("ADD_FRIEND");
+                        writer.println();
+                        writer.write(currentUser.getUsername());
+                        writer.println();
+                        writer.write(searchedUser.getUsername());
+                        writer.println();
+                        writer.flush();
 
-                        if (currentUserBlocked.contains(searchedUser.getUsername())) {
-                            System.out.println("Cannot add " + searchedUser.getUsername() + " since they are blocked.");
-                            break; //breaks out of switch block, re displays view user options
-                        }
-
-                        ArrayList<String> searchedUserBlocked = searchedUser.getBlocked();
-                        if (searchedUserBlocked == null) {
-                            //if (searchedUserBlocked == null) { // searchedUser doesn't have anyone blocked,
-                            searchedUserBlocked = new ArrayList<>(); //create an empty array to avoid null pointer
-                        }
-
-                        if (searchedUserBlocked.contains(currentUser.getUsername())) {
-                            System.out.println("Cannot add " + searchedUser.getUsername() +
-                                    " as a friend because you are blocked.");
-                            break; //breaks out of switch block, re displays view user options
-                        }
-
-                        ArrayList<String> searchedFriends = searchedUser.getFriends();
-                        if (searchedFriends == null) { //if searchedUser doesnt have friends
-                            searchedFriends = new ArrayList<>(); //create empty array to avoid null pointer
-                        }
-
-                        ArrayList<String> currentFriends = currentUser.getFriends();
-                        if (currentFriends == null) { //if currentUser doesnt have friends
-                            currentFriends = new ArrayList<>(); //create empty array to avoid null pointer
-                        }
-
-                        if (currentFriends.contains(searchedUser.getUsername())) { // if they are friends
-                            currentFriends.remove(searchedUser.getUsername());
-                            //remove searchedUser frm currentUser friends
-                            if (!currentUser.writeToFile()) { //write to user, if fails, add searchedUser back
-                                currentFriends.add(searchedUser.getUsername());
-                                System.out.println("Action not completed");
-                            } else {
-                                System.out.println(searchedUser.getUsername() + " removed as a friend!");
-                            }
-                            break; //breaks out of switch block, re displays view user options
-                        } else { // if they arent friends
-                            currentFriends.add(searchedUser.getUsername()); // add searchedUser to currentUser friends
-                            writer.write("WRITE_TO_FILE");
-                            writer.println();
-                            writer.flush();
-                            //if (!currentUser.writeToFile()) { //write to user, if fails, remove searchedUser
-                            if (reader.readLine().equals("false")) {
-                                currentFriends.remove(searchedUser.getUsername());
-                                System.out.println("Action not completed");
-                            } else {
-                                System.out.println(searchedUser.getUsername() + " added as a friend!");
-                            }
-                            break; //breaks out of switch block, re displays view user options
-                        }
+                        status = reader.readLine();
+                        System.out.println(status);
+                        break;
                     case "2": //"Block/Unblock" option
-                        ArrayList<String> blocked = currentUser.getBlocked();
-                        if (blocked == null) { // checking if blocked is null to avoid null pointer exception
-                            blocked = new ArrayList<>();
-                        }
+                        writer.write("BLOCK_USER");
+                        writer.println();
+                        writer.write(currentUser.getUsername());
+                        writer.println();
+                        writer.write(searchedUser.getUsername());
+                        writer.println();
+                        writer.flush();
 
-                        ArrayList<String> friends = currentUser.getFriends();
-                        if (friends == null) { // checking if blocked is null to avoid null pointer exception
-                            friends = new ArrayList<>();
-                        }
-
-                        if (blocked.contains(searchedUser.getUsername())) { // already blocked
-                            blocked.remove(searchedUser.getUsername()); // removed from blocked list
-                            writer.write("WRITE_TO_FILE");
-                            writer.println();
-                            writer.flush();
-                            if (reader.readLine().equals("false")) { //write to currentUser file, if fails,
-                                blocked.add(searchedUser.getUsername()); //add searchedUser back to currentUser blocked
-                                System.out.println("Action not completed");
-                                break; //breaks out of switch block, re displays view user options
-                            }
-                            System.out.println("Successfully unblocked " + searchedUser.getUsername());
-                        } else {
-                            blocked.add(searchedUser.getUsername()); // if not on list, block them
-                            boolean removed = friends.remove(searchedUser.getUsername());
-                            writer.write("WRITE_TO_FILE");
-                            writer.println();
-                            writer.flush();
-                            if (reader.readLine().equals("false")) { //write to currentUser file,
-                                blocked.remove(searchedUser.getUsername()); // if fails, remove
-                                if (removed) { // if searchedUser was removed from currentUser friends
-                                    friends.add(searchedUser.getUsername());
-                                    //add searchedUser back to currentUser friends
-                                }
-                                System.out.println("Action not completed");
-                                break; //breaks out of switch block, re displays view user options
-                            } else { // if writeToFile of current user didn't fail, update searchedUser friends
-                                ArrayList<String> searchedFriends1 = searchedUser.getFriends();
-                                // remove from friends list
-                                if (searchedFriends1 != null && searchedFriends1.contains(currentUser.getUsername())) {
-                                    searchedFriends1.remove(currentUser.getUsername());
-                                    writer.write("WRITE_TO_FILE");
-                                    writer.println();
-                                    writer.flush();
-                                    if (reader.readLine().equals("false")) {
-                                        searchedFriends1.add(currentUser.getUsername());
-                                        System.out.println("Action not completed");
-                                    }
-                                }
-                                System.out.println(searchedUser.getUsername() + " successfully blocked.");
-                                break; //breaks out of switch block, re displays view user options
-                            }
-                        }
+                        status = reader.readLine();
+                        System.out.println(status);
                         break; //breaks out of switch block, re displays view user options
                     case "3": //"Direct message" option.
                         directMessageMenu(currentUser, searchedUser, scan);
@@ -549,177 +467,139 @@ public class MainApplication extends Thread {
 
     private void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
         try {
-            ArrayList<String> currentUserBlocked = currentUser.getBlocked();
-            if (currentUserBlocked == null) { //checking for null and re-assigning to avoid null pointers.
-                currentUserBlocked = new ArrayList<>();
-            }
-            ArrayList<String> searchedUserBlocked = currentUser.getBlocked();
-            if (searchedUserBlocked == null) { //checking for null and re-assigning to avoid null pointers.
-                searchedUserBlocked = new ArrayList<>();
-            }
+            writer.write("CHECK_DIRECT");
+            writer.println();
+            writer.write(currentUser.getUsername());
+            writer.println();
+            writer.write(searchedUser.getUsername());
+            writer.println();
+            writer.flush();
 
-            ArrayList<String> currentFriends = currentUser.getFriends();
-            if (currentFriends == null) { //checking for null and re-assigning to avoid null pointers.
-                currentFriends = new ArrayList<>();
-            }
-            ArrayList<String> searchedFriends = currentUser.getBlocked();
-            if (searchedFriends == null) { //checking for null and re-assigning to avoid null pointers.
-                searchedFriends = new ArrayList<>();
-            }
-
-            if (currentUserBlocked.contains(searchedUser.getUsername())) {
-                // if currentUser has the searchedUser blocked.
-                System.out.println("You cannot message this user. You have the recipient blocked.");
-                return; //returns to userViewerMenu
-            }
-            if (searchedUserBlocked.contains(currentUser.getUsername())) {
-                //if the searchedUser has the currentUser blocked
-                System.out.println("You cannot message this user. The recipient has you blocked.");
-                return; //returns to userViewerMenu
-            }
-
-            if (!searchedUser.isOpenMessaging() && (!currentFriends.contains(searchedUser.getUsername()) ||
-                    !searchedFriends.contains(currentUser.getUsername()))) {
-                // if the searchedUser has open messaging off, and neither of them are on each other's friends list
-                System.out.println("You cannot message this user. You are not mutually friends." +
-                        " The recipient has open messaging disabled.");
-                if (searchedFriends.contains(currentUser.getUsername())) {
-                    // if the searched user has the currentUser on their friends list
-                    System.out.println("The recipient has sent you a friend request.\nExit to the main menu to search " +
-                            "and add " + searchedUser.getUsername() + " back.");
-                }
-                return; //returns to userViewerMenu
-            }
-
-
-            if (!currentUser.isOpenMessaging() && (!currentUser.getFriends().contains(searchedUser.getUsername()) ||
-                    !searchedUser.getFriends().contains(currentUser.getUsername()))) {
-                // if the current has open messaging off, and neither of them are on each other's friends list
-                System.out.println("You cannot message this user. You are not friends. You have open messaging disabled.");
-                if (searchedUser.getFriends().contains(currentUser.getUsername())) {
-                    // iff the searched user has the currentUser on their friends list
-                    System.out.println("The recipient has sent you a friend request.\nExit to the main menu to search " +
-                            "and add " + searchedUser.getUsername() + " back.");
-                }
+            String status = reader.readLine();
+            if (!status.equals("GOOD_TO_MESSAGE")) {
+                System.out.println(status);
                 return;
-            }
+            } else {
+                // if they are allowed to direct message! completes actions below.
+                String choice;
+                do {
+                    writer.write("OPEN_MESSAGES");
+                    writer.println();
+                    writer.write(currentUser.getUsername());
+                    writer.println();
+                    writer.write(searchedUser.getUsername());
+                    writer.println();
+                    writer.flush();
+                    if (reader.readLine().equals("false")) {
+                        //if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
+                        System.out.println("Error creating message file.");
+                        break; //
+                    }
+                     List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
+                    writer.write("READ_AND_DISPLAY_MESSAGES");
+                    writer.println();
+                    writer.write(currentUser.getUsername());
+                    writer.println();
+                    writer.write(searchedUser.getUsername());
+                    writer.println();
+                    writer.flush();
 
-            // if they are allowed to direct message! completes actions below.
-            String choice;
-            do {
-                writer.write("OPEN_MESSAGES");
-                writer.println();
-                writer.write(currentUser.getUsername());
-                writer.println();
-                writer.write(searchedUser.getUsername());
-                writer.println();
-                writer.flush();
-                if (reader.readLine().equals("false")) {
-                    //if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
-                    System.out.println("Error creating message file.");
-                    break; //
-                }
-                List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
-                writer.write("READ_MESSAGES");
-                writer.println();
-                writer.write(currentUser.getUsername());
-                writer.println();
-                writer.write(searchedUser.getUsername());
-                writer.println();
-                writer.flush();
-                if (reader.readLine().equals("false")) {
-                    //if (!directMessageMethods.displayMessages(messages)) {
-                    System.out.println("No messages yet.");
-                }
-                // showing direct message options
-                System.out.println("Direct Message Options:");
-                System.out.println("1. Send Message");
-                System.out.println("2. Delete Message");
-                System.out.println("3. Exit");
+                    String messageCount = ("Message " + reader.readLine());
+                    System.out.println(messageCount);
+                    System.out.println("==================================");
+//                    for (int i = 0; i < messageCount; i++) {
+//                        System.out.println(reader.readLine());
+//                    }
+                    System.out.println("==================================");
 
-                choice = scan.nextLine().trim();
-                switch (choice) {
-                    case "1": //"Send Message" option.
-                        System.out.println("Enter your message or enter 'back' to return:");
-                        String message = scan.nextLine();
-                        if ("back".equalsIgnoreCase(message)) {
-                            return; // Return to showLoginMenu
-                        } else { //anything but 'back'
-                            writer.write("SEND_MESSAGE");
+                    // showing direct message options
+                    System.out.println("Direct Message Options:");
+                    System.out.println("1. Send Message");
+                    System.out.println("2. Delete Message");
+                    System.out.println("3. Exit");
+                    choice = scan.nextLine().trim();
+                    switch (choice) {
+                        case "1": //"Send Message" option.
+                            System.out.println("Enter your message or enter 'back' to return:");
+                            String message = scan.nextLine();
+                            if ("back".equalsIgnoreCase(message)) {
+                                return; // Return to showLoginMenu
+                            } else { //anything but 'back'
+                                writer.write("SEND_MESSAGE");
+                                writer.println();
+                                writer.write(currentUser.getUsername());
+                                writer.println();
+                                writer.write(searchedUser.getUsername());
+                                writer.println();
+                                writer.write(message);
+                                writer.println();
+                                writer.flush();
+                                if (reader.readLine().equals("false")) {
+                                    //if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
+                                    System.out.println("Error sending message.");
+                                    break;
+                                }
+                            }
+                            break;
+                        case "2": //"Delete Message" option
+                            if (messages.isEmpty()) {
+                                System.out.println("There are no messages to delete.");
+                                break; //breaks out of switch case, re displaying direct message options
+                            }
+                            System.out.println("Enter the number next to the message you'd like to delete " +
+                                    "or enter 'back' to return:");
+                            String deleteIndexStr = scan.nextLine().trim();
+                            if ("back".equalsIgnoreCase(deleteIndexStr)) {
+                                return;
+                            }
+
+                            int deleteIndex;
+                            try {
+                                deleteIndex = Integer.parseInt(deleteIndexStr) - 1;
+                                if (deleteIndex < 0 || deleteIndex >= messages.size()) {
+                                    System.out.println("Invalid message number. Please try again.");
+                                    break; //breaks out of switch case, re displaying direct message options
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("Error: Invalid input. Please enter a number.");
+                                break; //breaks out of switch case, re displaying direct message options
+                            }
+
+                            String messageToDelete = messages.get(deleteIndex);
+                            if (messageToDelete.contains(searchedUser.getUsername())) {
+                                System.out.println("Cannot delete message that is not your own.");
+                                break; //breaks out of switch case, re displaying direct message options
+                            }
+                            messages.remove(deleteIndex);
+                            writer.write("WRITE_MESSAGES");
                             writer.println();
                             writer.write(currentUser.getUsername());
                             writer.println();
                             writer.write(searchedUser.getUsername());
                             writer.println();
-                            writer.write(message);
-                            writer.println();
                             writer.flush();
-                            if (reader.readLine().equals("false")) {
-                                //if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
-                                System.out.println("Error sending message.");
-                                break;
+                            if (reader.readLine().equals("true")) {
+                                //if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
+                                System.out.println("Message deleted successfully");
+                            } else {
+                                System.out.println("Could not delete message");
                             }
-                        }
-                        break;
-                    case "2": //"Delete Message" option
-                        if (messages.isEmpty()) {
-                            System.out.println("There are no messages to delete.");
                             break; //breaks out of switch case, re displaying direct message options
-                        }
-                        System.out.println("Enter the number next to the message you'd like to delete " +
-                                "or enter 'back' to return:");
-                        String deleteIndexStr = scan.nextLine().trim();
-                        if ("back".equalsIgnoreCase(deleteIndexStr)) {
-                            return;
-                        }
-
-                        int deleteIndex;
-                        try {
-                            deleteIndex = Integer.parseInt(deleteIndexStr) - 1;
-                            if (deleteIndex < 0 || deleteIndex >= messages.size()) {
-                                System.out.println("Invalid message number. Please try again.");
-                                break; //breaks out of switch case, re displaying direct message options
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Error: Invalid input. Please enter a number.");
+                        case "3":
+                            System.out.println("Returning...");
                             break; //breaks out of switch case, re displaying direct message options
-                        }
-
-                        String messageToDelete = messages.get(deleteIndex);
-                        if (messageToDelete.contains(searchedUser.getUsername())) {
-                            System.out.println("Cannot delete message that is not your own.");
+                        default:
+                            System.out.println("Invalid choice. Please try again.");
                             break; //breaks out of switch case, re displaying direct message options
-                        }
-                        messages.remove(deleteIndex);
-                        writer.write("WRITE_MESSAGES");
-                        writer.println();
-                        writer.write(currentUser.getUsername());
-                        writer.println();
-                        writer.write(searchedUser.getUsername());
-                        writer.println();
-                        writer.flush();
-                        if (reader.readLine().equals("true")) {
-                            //if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
-                            System.out.println("Message deleted successfully");
-                        } else {
-                            System.out.println("Could not delete message");
-                        }
-                        break; //breaks out of switch case, re displaying direct message options
-                    case "3":
-                        System.out.println("Returning...");
-                        break; //breaks out of switch case, re displaying direct message options
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                        break; //breaks out of switch case, re displaying direct message options
-                }
+                    }
 
-            } while (!choice.equals("3"));
-            writer.write("exit");
-            writer.println();
-            writer.flush();
-        } catch (IOException e) {
-
+                } while (!choice.equals("3"));
+                writer.write("exit");
+                writer.println();
+                writer.flush();
+            }
+        } catch(IOException e) {
+            System.out.println("IO Error Occurred");
         }
     } //directMessageMenu
-
 } // End class
