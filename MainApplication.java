@@ -48,34 +48,39 @@ public class MainApplication extends Thread {
     } //main()
 
     private void showLoginMenu(Scanner scan) {
-        // Presenting Login Menu Options
-        System.out.println("\nLogin Menu");
-        System.out.println("1. Login");
-        System.out.println("2. Create Account");
-        System.out.println("Enter choice, or type 'exit' to close application:");
+        try {
+            System.out.println("\nLogin Menu");
+            System.out.println("1. Login");
+            System.out.println("2. Create Account");
+            System.out.println("Enter choice, or type 'exit' to close application:");
 
-        String choice = scan.nextLine().trim();// Getting user input, 'choice'
+            String choice = scan.nextLine().trim();// Getting user input, 'choice'
 
-        if ("exit".equalsIgnoreCase(choice)) {
-            System.out.println("Exiting application...");
-            socket.close();
-        } // if they type exit, ignores case
+            if ("exit".equalsIgnoreCase(choice)) {
+                System.out.println("Exiting application...");
+                socket.close();
+            } // if they type exit, ignores case
 
-        switch (choice) {
-            case "1": // "Login" option
-                loginProcess(scan);
-                break;
-            case "2": // "Create Account" option
-                accountCreationProcess(scan);
-                break;
-            default: // Neither option.
-                System.out.println("Invalid choice. Please try again.");
-                break; // Remains in the Login Menu, Re-displaying the options
+            switch (choice) {
+                case "1": // "Login" option
+                    loginProcess(scan);
+                    break;
+                case "2": // "Create Account" option
+                    accountCreationProcess(scan);
+                    break;
+                default: // Neither option.
+                    System.out.println("Invalid choice. Please try again.");
+                    break; // Remains in the Login Menu, Re-displaying the options
+            }
+        } catch (IOException e) {
+
         }
+        // Presenting Login Menu Options
 
     } //showLoginMenu()
 
-    private void loginProcess(Scanner scan) {
+    private void loginProcess(Scanner scan) throws IOException {
+
         System.out.println("Enter username or enter 'back' to return to the Login Menu:");
         String username = scan.nextLine().trim();
         if ("back".equalsIgnoreCase(username)) {
@@ -87,35 +92,51 @@ public class MainApplication extends Thread {
         if ("back".equalsIgnoreCase(password)) {
             return; // Return to showLoginMenu
         }
+        writer.write("VALIDATE_LOGIN");
+        writer.write(password);
+        writer.println();
+        writer.flush();
 
         //// THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-        if (loginMethods.validateLogin(username, password)) {
+        if ((reader.readLine()).equals("true")) {
             User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
             showMainMenu(currentUser, scan); // Transition to main menu after successful login
         }
     } //loginProcess()
 
     private void accountCreationProcess(Scanner scan) {
-        String username = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(username)) {
-            return; // Return to showLoginMenu
-        }
-        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-        if (!(loginMethods.checkUsername(username))) {
-            return; //if login methods returns false (the username already exits), program returns to showLoginMenu
-            // method writes error to terminal.
-        }
-        System.out.println("Enter your desired password or enter 'back' to return to the Login Menu:");
-        String password = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(password)) {
-            return; // Return to showLoginMenu
-        }
-        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-        if (loginMethods.createAccount(username, password)) { //if the account is created successfully
-            System.out.println("Account Created Successfully. Sign in using 'Login'");
-            new User(username, password);
-        } else {
-            System.out.println("There was an error creating your account. Please try again.");
+        try {
+            String username = scan.nextLine().trim();
+            if ("back".equalsIgnoreCase(username)) {
+                return; // Return to showLoginMenu
+            }
+            writer.write("CHECK_USERNAME");
+            writer.write(username);
+            writer.println();
+            writer.flush();
+            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+            if ((reader.readLine()).equals("false")) {
+                return; //if login methods returns false (the username already exits), program returns to showLoginMenu
+                // method writes error to terminal.
+            }
+            System.out.println("Enter your desired password or enter 'back' to return to the Login Menu:");
+            String password = scan.nextLine().trim();
+            if ("back".equalsIgnoreCase(password)) {
+                return; // Return to showLoginMenu
+            }
+            writer.write("CHECK_USERNAME");
+            writer.write(password);
+            writer.println();
+            writer.flush();
+            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+            if ((reader.readLine()).equals("true")) { //if the account is created successfully
+                System.out.println("Account Created Successfully. Sign in using 'Login'");
+                new User(username, password);
+            } else {
+                System.out.println("There was an error creating your account. Please try again.");
+            }
+        } catch (IOException e) {
+
         }
 
     } //accountCreationProcess
@@ -182,92 +203,135 @@ public class MainApplication extends Thread {
         } while (!choice.equals("3"));
     } //showAccountSettings
 
-    private static void changePasswordProcess(User currentUser, Scanner scan) {
-        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-        System.out.println("To change your password, enter your old password.");
-        System.out.println("or enter 'back' to return");
-        String oldPassword = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(oldPassword)) {
-            return; // returns to showAccountSettings
-        }
+    private void changePasswordProcess(User currentUser, Scanner scan) {
+        try {
+            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+            System.out.println("To change your password, enter your old password.");
+            System.out.println("or enter 'back' to return");
+            String oldPassword = scan.nextLine().trim();
 
-        if (!(oldPassword.equals(currentUser.getPassword()))) {
-            System.out.println("Incorrect Password. Try again");
-            return; // returns to showAccountSettings
-        }
-        System.out.println("Enter your new password");
-        System.out.println("or enter 'back' to return");
+            if ("back".equalsIgnoreCase(oldPassword)) {
+                return; // returns to showAccountSettings
+            }
+            if (!(oldPassword.equals(currentUser.getPassword()))) {
+                System.out.println("Incorrect Password. Try again");
+                return; // returns to showAccountSettings
+            }
+            System.out.println("Enter your new password");
+            System.out.println("or enter 'back' to return");
 
-        String newPassword = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(newPassword)) {
-            return; // returns to showAccountSettings
-        }
+            String newPassword = scan.nextLine().trim();
+            if ("back".equalsIgnoreCase(newPassword)) {
+                return; // returns to showAccountSettings
+            }
 
-        currentUser.setPassword(newPassword);
-        if (currentUser.writeToFile()) {
-            System.out.println("Password changed successfully.\nReturning...");
-        } else {
-            // if there's an error writing to the user's file, change the password back to the old password in case
-            // the user's file gets written again and IS successful.
-            System.out.println("There was an error changing your password.\nTry again.");
-            currentUser.setPassword(oldPassword);
+            currentUser.setPassword(newPassword);
+            writer.write("WRITE_TO_FILE");
+            writer.println();
+            writer.flush();
+            //if (currentUser.writeToFile()) {
+            if (reader.readLine().equals("true")) {
+                System.out.println("Password changed successfully.\nReturning...");
+            } else {
+                // if there's an error writing to the user's file, change the password back to the old password in case
+                // the user's file gets written again and IS successful.
+                System.out.println("There was an error changing your password.\nTry again.");
+                currentUser.setPassword(oldPassword);
+            }
+        } catch (IOException e) {
+
         }
 
     } //changePasswordProcess()
 
-    private static void changeDirectMessageSetting(User currentUser, Scanner scan) {
-        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-        String choice;
-        do {
-            // Showing direct messaging setting options
-            System.out.println("Direct Messaging Privacy Choices:");
-            System.out.println("1. Open to everyone");
-            System.out.println("2. Open to just your friends");
-            System.out.println("3. Cancel");
-            System.out.println("Enter choice:");
+    private void changeDirectMessageSetting(User currentUser, Scanner scan) {
+        try {
+            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+            String choice;
+            do {
+                // Showing direct messaging setting options
+                System.out.println("Direct Messaging Privacy Choices:");
+                System.out.println("1. Open to everyone");
+                System.out.println("2. Open to just your friends");
+                System.out.println("3. Cancel");
+                System.out.println("Enter choice:");
 
-            choice = scan.nextLine().trim();
-            boolean oldSetting = currentUser.isOpenMessaging();
-            switch (choice) {
-                case "1": //"Open to everyone"
-                    currentUser.setOpenMessaging(true);
-                    if (!currentUser.writeToFile()) {
-                        currentUser.setOpenMessaging(oldSetting);
-                        System.out.println("An error occurred. Could not update your settings.");
+                choice = scan.nextLine().trim();
+                boolean oldSetting = currentUser.isOpenMessaging();
+                switch (choice) {
+                    case "1": //"Open to everyone"
+                        currentUser.setOpenMessaging(true);
+                        writer.write("SET_OPEN_MESSAGING");
+                        writer.println();
+                        writer.flush();
+                        writer.write("true");
+                        writer.println();
+                        writer.flush();
+                        //if (!currentUser.writeToFile()) {
+                        if (reader.readLine().equals("false")) {
+                            currentUser.setOpenMessaging(oldSetting);
+                            writer.write("SET_OPEN_MESSAGING");
+                            writer.println();
+                            writer.flush();
+                            writer.write(String.valueOf(oldSetting));
+                            writer.println();
+                            writer.flush();
+                            System.out.println("An error occurred. Could not update your settings.");
+                            break; // breaks out of switch, re displays the direct message options
+                        } else {
+                            System.out.println("Successfully updated your direct messaging to open to all users.");
+                        }
+                        return; //returns back to showAccountSettings
+                    case "2":
+                        currentUser.setOpenMessaging(false);
+                        writer.write("SET_OPEN_MESSAGING");
+                        writer.println();
+                        writer.flush();
+                        writer.write("false");
+                        writer.println();
+                        writer.flush();
+                        if (reader.readLine().equals("false")) {
+                            currentUser.setOpenMessaging(oldSetting);
+                            writer.write("SET_OPEN_MESSAGING");
+                            writer.println();
+                            writer.flush();
+                            writer.write(String.valueOf(oldSetting));
+                            writer.println();
+                            writer.flush();
+                            System.out.println("An error occurred. Could not update your settings.");
+                            break; // breaks out of switch, re displays the direct message options
+                        } else {
+                            System.out.println("Successfully updated your direct messaging to open to only friends.");
+                        }
+                        return; //returns back to showAccountSettings
+                    case "3":
+                        System.out.println("Returning...");
+                        break;
+                    default:
+                        System.out.println("Invalid choice. Please try again.");
                         break; // breaks out of switch, re displays the direct message options
-                    } else {
-                        System.out.println("Successfully updated your direct messaging to open to all users.");
-                    }
-                    return; //returns back to showAccountSettings
-                case "2":
-                    currentUser.setOpenMessaging(false);
-                    if (!currentUser.writeToFile()) {
-                        currentUser.setOpenMessaging(oldSetting);
-                        System.out.println("An error occurred. Could not update your settings.");
-                        break; // breaks out of switch, re displays the direct message options
-                    } else {
-                        System.out.println("Successfully updated your direct messaging to open to only friends.");
-                    }
-                    return; //returns back to showAccountSettings
-                case "3":
-                    System.out.println("Returning...");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    break; // breaks out of switch, re displays the direct message options
-
-            }
-        } while (!choice.equals("3"));
+                }
+            } while (!choice.equals("3"));
+        } catch (IOException e) {
+            
+        }
     } //directMessageSettings
 
-    private static void searchProcess(User currentUser, Scanner scan) {
+    private void searchProcess(User currentUser, Scanner scan) {
         // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         System.out.println("Search user or enter 'back' to return to main menu");
         String search = scan.nextLine().trim();
         if (search.equals("back")) {
             System.out.println("Returning...");
         } else { // if user enters anything but 'back'
+            writer.write("SEARCH_METHODS");
+            writer.println();
+            writer.flush();
+            writer.write(search);
+            writer.println();
+            writer.flush();
             ArrayList<String> results = searchMethods.searchUsers(search);
+            //how do i do client server for this
             results.remove(currentUser.getUsername()); // removes currentUser from list = does not display currentUser
             if (results.isEmpty()) {
                 System.out.println("No matched users");
@@ -291,7 +355,10 @@ public class MainApplication extends Thread {
                         // Valid selection, proceed with userViewer or similar
                         String selectedUser = results.get(userNumber);
                         User searchedUser = new User(selectedUser);
-                        searchedUser.displayProfile();
+                        writer.write("DISPLAY_PROFILE");
+                        writer.println();
+                        writer.flush();
+                        //searchedUser.displayProfile();
                         userViewerMenu(currentUser, searchedUser, scan);
                         break; //breaks out of while loop after user is done with userViewerMenu
                     } else {
@@ -305,7 +372,7 @@ public class MainApplication extends Thread {
         }
     } //searchProcess()
 
-    private static void userViewerMenu(User currentUser, User searchedUser, Scanner scan) {
+    private void userViewerMenu(User currentUser, User searchedUser, Scanner scan) {
         // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         String choice;
         do {
@@ -330,7 +397,8 @@ public class MainApplication extends Thread {
                     }
 
                     ArrayList<String> searchedUserBlocked = searchedUser.getBlocked();
-                    if (searchedUserBlocked == null) { // searchedUser doesn't have anyone blocked,
+                    if (searchedUserBlocked == null) {
+                    //if (searchedUserBlocked == null) { // searchedUser doesn't have anyone blocked,
                         searchedUserBlocked = new ArrayList<>(); //create an empty array to avoid null pointer
                     }
 
@@ -362,7 +430,11 @@ public class MainApplication extends Thread {
                         break; //breaks out of switch block, re displays view user options
                     } else { // if they arent friends
                         currentFriends.add(searchedUser.getUsername()); // add searchedUser to currentUser friends
-                        if (!currentUser.writeToFile()) { //write to user, if fails, remove searchedUser
+                        writer.write("WRITE_TO_FILE");
+                        writer.println();
+                        writer.flush();
+                        //if (!currentUser.writeToFile()) { //write to user, if fails, remove searchedUser
+                        if (reader.readLine().equals("false")) {
                             currentFriends.remove(searchedUser.getUsername());
                             System.out.println("Action not completed");
                         } else {
@@ -383,7 +455,10 @@ public class MainApplication extends Thread {
 
                     if (blocked.contains(searchedUser.getUsername())) { // already blocked
                         blocked.remove(searchedUser.getUsername()); // removed from blocked list
-                        if (!currentUser.writeToFile()) { //write to currentUser file, if fails,
+                        writer.write("WRITE_TO_FILE");
+                        writer.println();
+                        writer.flush();
+                        if (reader.readLine().equals("false")) { //write to currentUser file, if fails,
                             blocked.add(searchedUser.getUsername()); //add searchedUser back to currentUser blocked
                             System.out.println("Action not completed");
                             break; //breaks out of switch block, re displays view user options
@@ -392,7 +467,10 @@ public class MainApplication extends Thread {
                     } else {
                         blocked.add(searchedUser.getUsername()); // if not on list, block them
                         boolean removed = friends.remove(searchedUser.getUsername());
-                        if (!currentUser.writeToFile()) { //write to currentUser file,
+                        writer.write("WRITE_TO_FILE");
+                        writer.println();
+                        writer.flush();
+                        if (reader.readLine().equals("false")) { //write to currentUser file,
                             blocked.remove(searchedUser.getUsername()); // if fails, remove
                             if (removed) { // if searchedUser was removed from currentUser friends
                                 friends.add(searchedUser.getUsername());
@@ -405,7 +483,10 @@ public class MainApplication extends Thread {
                             // remove from friends list
                             if (searchedFriends1 != null && searchedFriends1.contains(currentUser.getUsername())) {
                                 searchedFriends1.remove(currentUser.getUsername());
-                                if (!searchedUser.writeToFile()) {
+                                writer.write("WRITE_TO_FILE");
+                                writer.println();
+                                writer.flush();
+                                if (reader.readLine().equals("false")) {
                                     searchedFriends1.add(currentUser.getUsername());
                                     System.out.println("Action not completed");
                                 }
@@ -429,7 +510,7 @@ public class MainApplication extends Thread {
 
     } //userViewerMenu
 
-    private static void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
+    private void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
         ArrayList<String> currentUserBlocked = currentUser.getBlocked();
         if (currentUserBlocked == null) { //checking for null and re-assigning to avoid null pointers.
             currentUserBlocked = new ArrayList<>();
@@ -493,7 +574,11 @@ public class MainApplication extends Thread {
                 break; //
             }
             List<String> messages = directMessageMethods.readMessages(currentUser, searchedUser);
-            if (!directMessageMethods.displayMessages(messages)) {
+            writer.write("DISPLAY_MESSAGES");
+            writer.println();
+            writer.flush();
+            if (reader.readLine().equals("false")) {
+            //if (!directMessageMethods.displayMessages(messages)) {
                 System.out.println("No messages yet.");
             }
             // showing direct message options
@@ -510,7 +595,11 @@ public class MainApplication extends Thread {
                     if ("back".equalsIgnoreCase(message)) {
                         return; // Return to showLoginMenu
                     } else { //anything but 'back'
-                        if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
+                        writer.write("SEND_MESSAGE");
+                        writer.println();
+                        writer.flush();
+                        if (reader.readLine().equals("false")) {
+                        //if (!directMessageMethods.sendMessage(currentUser, searchedUser, message)) {
                             System.out.println("Error sending message.");
                             break;
                         }
@@ -546,7 +635,11 @@ public class MainApplication extends Thread {
                         break; //breaks out of switch case, re displaying direct message options
                     }
                     messages.remove(deleteIndex);
-                    if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
+                    writer.write("WRITE_MESSAGES");
+                    writer.println();
+                    writer.flush();
+                    if (reader.readLine().equals("true")) {
+                    //if (directMessageMethods.writeMessages(currentUser, searchedUser, messages)) {
                         System.out.println("Message deleted successfully");
                     } else {
                         System.out.println("Could not delete message");
