@@ -3,19 +3,10 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-/**
- * DirectMessageMethods.java
- * 
- * This class has all the direct message methods, used when a user wants to message another user.
- *
- * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
- * Lecture 1, Lab 10
- * @version 3/25/2024
- */
 
-public class DirectMessageMethods implements DirectMessageInterface {
+public class DirectMessageMethods {
 
-    public String getFileName(User currentUser, User searchedUser) {
+    public synchronized String getFileName(User currentUser, User searchedUser) {
         ArrayList<String> names = new ArrayList<>();
         names.add(currentUser.getUsername());
         names.add(searchedUser.getUsername());
@@ -25,7 +16,7 @@ public class DirectMessageMethods implements DirectMessageInterface {
 
         return names.get(0) + names.get(1) + "Messages.txt";
     } //getFileName
-    public boolean openMessages(User currentUser, User searchedUser) {
+    public synchronized boolean openMessages(User currentUser, User searchedUser) {
         String fileName = getFileName(currentUser, searchedUser);
         File messageFile = new File(fileName);
 
@@ -39,7 +30,7 @@ public class DirectMessageMethods implements DirectMessageInterface {
         return true;
     } //openMessages
 
-    public List<String> readMessages(User currentUser, User searchedUser) {
+    public synchronized List<String> readMessages(User currentUser, User searchedUser) {
         String fileName = getFileName(currentUser, searchedUser);
         List<String> messages = new ArrayList<>();
         try (BufferedReader bfr = new BufferedReader((new FileReader(fileName)))) {
@@ -53,20 +44,20 @@ public class DirectMessageMethods implements DirectMessageInterface {
         return messages;
     } //readMessages
 
-    public boolean displayMessages(List<String> messages) {
+    public synchronized String displayMessages(List<String> messages) {
+        StringBuilder builder = new StringBuilder();
         if (messages.isEmpty()) {
-            return false;
+            builder.append("No messages available.");
         } else {
-            System.out.println("==================================");
             for (int i = 0; i < messages.size(); i++) {
-                System.out.println((i+1) + "." + messages.get(i));
+                builder.append((i + 1)).append(". ").append(messages.get(i)).append("\n");
             }
-            System.out.println("==================================");
         }
-        return true;
-    } //display messages
+        return builder.toString();
+    } //displayMessages
 
-    public boolean sendMessage(User currentUser, User searchedUser, String message) {
+
+    public synchronized boolean sendMessage(User currentUser, User searchedUser, String message) {
         String formattedMessage = currentUser.getUsername() + ": " + message;
         String fileName = getFileName(currentUser, searchedUser);
         try (BufferedWriter bfw = new BufferedWriter(new FileWriter(fileName, true))) {
@@ -77,7 +68,7 @@ public class DirectMessageMethods implements DirectMessageInterface {
         return true;
     } //sendMessage()
 
-    public boolean writeMessages(User currentUser, User searchedUser, List<String> messages) {
+    public synchronized boolean writeMessages(User currentUser, User searchedUser, List<String> messages) {
         String fileName = getFileName(currentUser, searchedUser);
         try (BufferedWriter bfw = new BufferedWriter(new FileWriter(fileName))) {
             for (String message : messages) {
@@ -86,7 +77,7 @@ public class DirectMessageMethods implements DirectMessageInterface {
         } catch (IOException e) {
             return false;
         }
-       return true;
+        return true;
     } //writeMessages
 
 } //end class
