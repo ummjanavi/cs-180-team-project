@@ -143,7 +143,9 @@ public class AppServer implements ServerInterface {
                             " as a friend because you are blocked.");
                     writer.println();
                     writer.flush();
-                } else {
+                }
+                if (!searchedUserBlocked.contains(currentUser.getUsername()) &&
+                        !currentUserBlocked.contains(searchedUser.getUsername())) {
                     ArrayList<String> searchedFriends = searchedUser.getFriends();
                     if (searchedFriends == null) { //if searchedUser doesnt have friends
                         searchedFriends = new ArrayList<>(); //create empty array to avoid null pointer
@@ -291,6 +293,7 @@ public class AppServer implements ServerInterface {
                     }
                 } else {
                     writer.write("GOOD_TO_MESSAGE\n");
+
                 }
                 writer.println();
                 writer.flush();
@@ -298,6 +301,7 @@ public class AppServer implements ServerInterface {
                 User currentUser = new User(reader.readLine());
                 User searchedUser = new User(reader.readLine());
                 boolean output = directMessageMethods.openMessages(currentUser, searchedUser);
+                System.out.println("output " + output);
                 writer.write(String.valueOf(output));
                 writer.println();
                 writer.flush();
