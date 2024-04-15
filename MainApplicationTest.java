@@ -1,21 +1,12 @@
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+package TeamProject;
+
+import static org.junit.Assert.*;
+import org.junit.*;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.Scanner;
 
-import static org.junit.Assert.*;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-/**
- * MainApplicationTest.java
- *
- * This class tests the MainApplication class and validates that the MainApplication runs as intended.
- *
- * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
- * Lecture 1, Lab 10
- * @version 3/25/2024
- */
 public class MainApplicationTest {
 
     private final InputStream systemIn = System.in;
@@ -29,7 +20,6 @@ public class MainApplicationTest {
 
     @After
     public void restoreSystemInputOutput() {
-
         System.setIn(systemIn);
     }
 
@@ -41,7 +31,11 @@ public class MainApplicationTest {
         System.setIn(testIn);
 
         // Execute login process
-        assertDoesNotThrow(() -> MainApplication.loginProcess(new Scanner(System.in)));
+        try {
+            MainApplication.loginProcess(new Scanner(System.in));
+        } catch (Exception e) {
+            fail("Should not throw exception");
+        }
     }
 
     @Test
@@ -462,12 +456,9 @@ public class MainApplicationTest {
         assertThrows(NullPointerException.class, () -> MainApplication.userViewerMenu(new User("testUser"), null, new Scanner(System.in)));
     }
 
-
     @Test
     public void testUserViewerMenuNullScanner() {
         // Tests when the scanner passed to userViewerMenu is null
         assertThrows(NullPointerException.class, () -> MainApplication.userViewerMenu(new User("testUser"), new User("anotherUser"), null));
     }
-
-
 }
