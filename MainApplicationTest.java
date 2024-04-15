@@ -23,7 +23,7 @@ public class MainApplicationTest {
 
     @Before
     public void setUpInput() {
-
+        testIn = new ByteArrayInputStream("".getBytes());
         System.setIn(testIn);
     }
 
@@ -34,7 +34,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testLoginProcess_ValidCredentials() {
+    public void testLoginProcessValidCredentials() {
         // Simulates user input for login
         String input = "testUser\n" + "testPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -341,19 +341,19 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testLoginProcess_NullScanner() {
+    public void testLoginProcessNullScanner() {
         // Tests when the scanner passed to loginProcess is null
         assertThrows(NullPointerException.class, () -> MainApplication.loginProcess(null));
     }
 
     @Test
-    public void testAccountCreationProcess_NullScanner() {
+    public void testAccountCreationProcessNullScanner() {
         // Tests when the scanner passed to accountCreationProcess is null
         assertThrows(NullPointerException.class, () -> MainApplication.accountCreationProcess(null));
     }
 
     @Test
-    public void testShowMainMenu_NullUser() {
+    public void testShowMainMenuNullUser() {
         // Tests when the user passed to showMainMenu is null
         String input = "1\nback\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -364,13 +364,13 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testShowMainMenu_NullScanner() {
+    public void testShowMainMenuNullScanner() {
         // Tests when the scanner passed to showMainMenu is null
         assertThrows(NullPointerException.class, () -> MainApplication.showMainMenu(new User("testUser"), null));
     }
 
     @Test
-    public void testChangePasswordProcess_NullUser() {
+    public void testChangePasswordProcessNullUser() {
         // Tests when the user passed to changePasswordProcess is null
         String input = "testPassword\nnewPassword\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -381,13 +381,13 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testChangePasswordProcess_NullScanner() {
+    public void testChangePasswordProcessNullScanner() {
         // Tests when the scanner passed to changePasswordProcess is null
         assertThrows(NullPointerException.class, () -> MainApplication.changePasswordProcess(new User("testUser"), null));
     }
 
     @Test
-    public void testDirectMessageMenu_NullSender() {
+    public void testDirectMessageMenuNullSender() {
         // Tests when the sender passed to directMessageMenu is null
         String input = "1\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -398,7 +398,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testDirectMessageMenu_NullReceiver() {
+    public void testDirectMessageMenuNullReceiver() {
         // Tests when the receiver passed to directMessageMenu is null
         String input = "1\n3\n";
         testIn = new ByteArrayInputStream(input.getBytes());
@@ -409,25 +409,25 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testDirectMessageMenu_NullScanner() {
+    public void testDirectMessageMenuNullScanner() {
         // Tests when the scanner passed to directMessageMenu is null
         assertThrows(NullPointerException.class, () -> MainApplication.directMessageMenu(new User("testUser"), new User("anotherUser"), null));
     }
 
     @Test
-    public void testChangeDirectMessageSetting_NullUser() {
+    public void testChangeDirectMessageSettingNullUser() {
         // Tests when the user passed to changeDirectMessageSetting is null
         assertThrows(NullPointerException.class, () -> MainApplication.changeDirectMessageSetting(null, new Scanner(System.in)));
     }
 
     @Test
-    public void testChangeDirectMessageSetting_NullScanner() {
+    public void testChangeDirectMessageSettingNullScanner() {
         // Tests when the scanner passed to changeDirectMessageSetting is null
         assertThrows(NullPointerException.class, () -> MainApplication.changeDirectMessageSetting(new User("testUser"), null));
     }
 
     @Test
-    public void testSearchProcess_NullUser() {
+    public void testSearchProcessNullUser() {
         // Tests when the user passed to searchProcess is null
         String input = "nonexistentUser\nback\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -437,7 +437,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testSearchProcess_NullScanner() {
+    public void testSearchProcessNullScanner() {
         // Tests when the scanner passed to searchProcess is null
         assertThrows(NullPointerException.class, () -> MainApplication.searchProcess(new User("testUser"), null));
     }
@@ -453,7 +453,7 @@ public class MainApplicationTest {
     }
 
     @Test
-    public void testUserViewerMenu_NullUser() {
+    public void testUserViewerMenuNullUser() {
         // Tests when the user passed to userViewerMenu is null
         String input = "invalid\n4\n";
         System.setIn(new ByteArrayInputStream(input.getBytes()));
@@ -464,8 +464,10 @@ public class MainApplicationTest {
 
 
     @Test
-    public void testUserViewerMenu_NullScanner() {
+    public void testUserViewerMenuNullScanner() {
         // Tests when the scanner passed to userViewerMenu is null
         assertThrows(NullPointerException.class, () -> MainApplication.userViewerMenu(new User("testUser"), new User("anotherUser"), null));
     }
+
+
 }
