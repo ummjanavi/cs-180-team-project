@@ -29,6 +29,20 @@ public class MainApplication extends Thread {
         this.writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
     } // constructor
 
+    public static void main(String[] args) {
+        // Connect to the server and create reader/writer as before
+        // Create MainApplication instance
+        MainApplication client = null;
+        try {
+            client = new MainApplication(new Socket("localhost", 4545));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        // Start the thread
+        client.start();
+    }
+
+
     @Override
     public void run() {
         try (Scanner scan = new Scanner(System.in)){
@@ -60,6 +74,7 @@ public class MainApplication extends Thread {
             if ("exit".equalsIgnoreCase(choice)) {
                 System.out.println("Exiting application...");
                 socket.close();
+                return;
             } // if they type exit, ignores case
 
             switch (choice) {
@@ -107,6 +122,7 @@ public class MainApplication extends Thread {
 
     private void accountCreationProcess(Scanner scan) {
         try {
+            System.out.println("Enter your desired username or enter 'back' to return to the Login Menu:");
             String username = scan.nextLine().trim();
             if ("back".equalsIgnoreCase(username)) {
                 return; // Return to showLoginMenu
@@ -574,7 +590,7 @@ public class MainApplication extends Thread {
                 writer.println();
                 writer.flush();
                 if (reader.readLine().equals("false")) {
-                //if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
+                    //if (!directMessageMethods.openMessages(currentUser, searchedUser)) {
                     System.out.println("Error creating message file.");
                     break; //
                 }
@@ -585,7 +601,7 @@ public class MainApplication extends Thread {
                 writer.println();
                 writer.flush();
                 if (reader.readLine().equals("false")) {
-                //if (!directMessageMethods.displayMessages(messages)) {
+                    //if (!directMessageMethods.displayMessages(messages)) {
                     System.out.println("No messages yet.");
                 }
                 // showing direct message options
