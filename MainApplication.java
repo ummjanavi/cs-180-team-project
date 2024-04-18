@@ -401,7 +401,7 @@ public class MainApplication extends Thread {
                         System.out.println("Error: Selection out of range. Please try again.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Error: Invalid input. Please enter a number.");
+                    System.out.println("Error: Invalid input. Please enter a number");
                 } catch (IOException f) {
                     System.out.println("Error reading from server");
                 }
@@ -466,6 +466,8 @@ public class MainApplication extends Thread {
     } //userViewerMenu
 
     private void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
+        int num = 0;
+        int flag1 = 1;
         try {
             writer.write("CHECK_DIRECT");
             writer.println();
@@ -482,7 +484,7 @@ public class MainApplication extends Thread {
             } else {
                 // if they are allowed to direct message! completes actions below.
                 String choice;
-                String answer = reader.readLine();
+                String answer = reader.readLine(); // needed to read empty line
                 do {
                     writer.write("OPEN_MESSAGES");
                     writer.println();
@@ -510,8 +512,16 @@ public class MainApplication extends Thread {
                     //String messageCount = ("Message " + reader.readLine());
                     //System.out.println(messageCount);
                     //System.out.println("second " + reader.readLine());
-                    int num = Integer.parseInt(reader.readLine());
+
+                    //for (int j = 1; j < flag1; j++) {
+                    //    reader.readLine();
+                    //}
+
+                    num = Integer.parseInt(reader.readLine());
+
                     System.out.println("==================================");
+
+                    //flag1++;
                     for (int i = 0; i < num; i++) {
                         System.out.println(reader.readLine());
                     }
