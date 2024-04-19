@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 public class DirectMessageMethods {
-
     public synchronized String getFileName(User currentUser, User searchedUser) {
         ArrayList<String> names = new ArrayList<>();
         names.add(currentUser.getUsername());
