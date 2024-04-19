@@ -1,3 +1,5 @@
+package TeamProject;
+
 import com.sun.jdi.request.WatchpointRequest;
 import com.sun.tools.javac.Main;
 
@@ -483,7 +485,7 @@ public class MainApplication extends Thread {
                 return;
             } else {
                 // if they are allowed to direct message! completes actions below.
-                String choice;
+                String choice = null;
                 String answer = reader.readLine(); // needed to read empty line
                 do {
                     writer.write("OPEN_MESSAGES");
@@ -509,19 +511,24 @@ public class MainApplication extends Thread {
                     writer.println();
                     writer.flush();
 
-                    //String messageCount = ("Message " + reader.readLine());
-                    //System.out.println(messageCount);
-                    //System.out.println("second " + reader.readLine());
 
-                    //for (int j = 1; j < flag1; j++) {
-                    //    reader.readLine();
-                    //}
+                    for (int j = 1; j < flag1; j++) {
+                        if (choice.equals("1")) {
+                            String h = reader.readLine();
+                            //System.out.println(h);
+                        }
+                    }
+                    /*
+                    String yes = reader.readLine();
+                    yes = reader.readLine();
+                    yes = reader.readLine(); */
 
                     num = Integer.parseInt(reader.readLine());
 
                     System.out.println("==================================");
-
-                    //flag1++;
+                    if (flag1 == 1) {
+                        flag1++;
+                    }
                     for (int i = 0; i < num; i++) {
                         System.out.println(reader.readLine());
                     }
@@ -581,8 +588,8 @@ public class MainApplication extends Thread {
                             }
 
                             String messageToDelete = messages.get(deleteIndex);
-                            //this might be a problem if user writes the searched users name intheir message
-                            if (messageToDelete.contains(searchedUser.getUsername())) {
+                            //this might be a problem if user writes the searched users name in their message
+                            if (messageToDelete.contains(searchedUser.getUsername() + ":")) {
                                 System.out.println("Cannot delete message that is not your own.");
                                 break; //breaks out of switch case, re displaying direct message options
                             }
@@ -596,6 +603,8 @@ public class MainApplication extends Thread {
                             writer.println();
                             writer.write(searchedUser.getUsername());
                             writer.println();
+                            //writer.write(deleteIndex);
+                            //writer.println();
                             writer.flush();
                             String first = reader.readLine();
                             String second = reader.readLine();
