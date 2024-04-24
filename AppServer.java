@@ -1,11 +1,17 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
+/**
+ * AppServer.java
+ *
+ * Server Class for the app Friendify that interacts with server database.
+ *
+ * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ * Lecture 1, Lab 10
+ * @version 4/23/2024
+ */
 public class AppServer implements ServerInterface {
 
     private static final int DEFAULT_PORT = 4545;
