@@ -4,7 +4,13 @@ import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * MainApplication.java
@@ -46,24 +52,67 @@ public class MainApplication extends Thread {
     @Override
     public void run() {
         try (Scanner scan = new Scanner(System.in)) {
-            while (!this.socket.isClosed()) {
+            //while (!this.socket.isClosed()) {
                 showLoginMenu(scan);
-            }
+            //}
         } finally {
-            try {
+            /*try {
                 if (writer != null) writer.close();
                 if (reader != null) reader.close();
                 if (socket != null) socket.close();
             } catch (IOException f) {
-                System.out.println("Failed to close writer, reader, or socket.");
-            }
+                JOptionPane.showMessageDialog(null, "Failed to close writer, reader, or socket.", "Error", JOptionPane.ERROR_MESSAGE);
+                //System.out.println("Failed to close writer, reader, or socket.");
+            }*/
         }
 
         // Repeatedly show the login menu until the application is exited
     } //main()
 
     private void showLoginMenu(Scanner scan) {
-        try {
+        JFrame frame = new JFrame("Welcome to Friendify");
+        JPanel panel = new JPanel();
+        JLabel welcomeLabel = new JLabel("Please login to an existing account or create a new one");
+        panel.add(welcomeLabel);
+        JButton loginButton = new JButton("Login");
+        JButton createAccountButton = new JButton("Create Account");
+        JButton exitButton = new JButton("Exit");
+
+        loginButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    frame.dispose();
+                    loginProcess(scan);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+        createAccountButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                accountCreationProcess(scan);
+            }
+        });
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    socket.close();
+                    return;
+                } catch (IOException f) {
+                    throw new RuntimeException(f);
+                }
+            }
+        });
+        panel.add(loginButton);
+        panel.add(createAccountButton);
+        panel.add(exitButton);
+        frame.add(panel);
+        frame.setSize(400, 130);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        /*try {
             System.out.println("\nLogin Menu");
             System.out.println("1. Login");
             System.out.println("2. Create Account");
@@ -90,23 +139,85 @@ public class MainApplication extends Thread {
             }
         } catch (IOException e) {
             // NEED SOMETHING IN HERE
-        }
+        }*/
         // Presenting Login Menu Options
 
     } //showLoginMenu()
 
     private void loginProcess(Scanner scan) throws IOException {
+        JFrame frame = new JFrame("Login");
+        JPanel panel = new JPanel();
+        JLabel welcomeLabel = new JLabel("Enter Username");
+        panel.add(welcomeLabel);
+        JTextField usernameField = new JTextField(20);
+        panel.add(usernameField);
+        JLabel passwordLabel = new JLabel("Enter Password");
+        panel.add(passwordLabel);
+        JPasswordField passwordField = new JPasswordField(20);
+        panel.add(passwordField);
 
-        System.out.println("Enter username or enter 'back' to return to the Login Menu:");
+        JButton enterButton = new JButton("Login");
+        panel.add(enterButton);
+        JButton backButton = new JButton("Back");
+        panel.add(backButton);
+
+        JLabel welcome = new JLabel("Please enter username and password below.\n");
+        panel.add(welcome);
+
+        enterButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                try {
+                    writer.write("VALIDATE_LOGIN");
+                    writer.println();
+                    writer.write(username);
+                    writer.println();
+                    writer.write(password);
+                    writer.println();
+                    writer.flush();
+
+                    if ((reader.readLine()).equals("true")) {
+                        JOptionPane.showMessageDialog(frame, "Login Successful!");
+                        User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
+                        frame.dispose();
+                        showMainMenu(currentUser, scan); // Transition to main menu after successful login
+                        // Close the login window after successful login
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Login failed. Incorrect username or password.");
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error occurred during login: " + ex.getMessage());
+                }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+                showLoginMenu(scan);
+                // Close the login window when returning to the login menu
+            }
+        });
+
+        frame.add(panel);
+        frame.setSize(400, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        /*System.out.println("Enter username or enter 'back' to return to the Login Menu:");
         String username = scan.nextLine().trim();
         if ("back".equalsIgnoreCase(username)) {
-            return; // Return to showLoginMenu
+            showLoginMenu(scan);
+            //return; // Return to showLoginMenu
         }
 
         System.out.println("Enter password or enter 'back' to return to the Login Menu:");
         String password = scan.nextLine().trim();
         if ("back".equalsIgnoreCase(password)) {
-            return; // Return to showLoginMenu
+            showLoginMenu(scan);
+            //return; // Return to showLoginMenu
         }
         writer.write("VALIDATE_LOGIN");
         writer.println();
@@ -123,16 +234,94 @@ public class MainApplication extends Thread {
             showMainMenu(currentUser, scan); // Transition to main menu after successful login
         } else {
             System.out.println("Login failed. Incorrect username or password.\nReturning to Login Menu");
-            return;
-        }
+            showLoginMenu(scan);
+            //return;
+        }*/
     } //loginProcess()
 
     private void accountCreationProcess(Scanner scan) {
-        try {
+        JFrame frame = new JFrame("Create Account");
+        JPanel panel = new JPanel();
+        JLabel welcomeLabel = new JLabel("Create Username");
+        panel.add(welcomeLabel);
+        JTextField usernameField = new JTextField(20);
+        panel.add(usernameField);
+        JLabel passwordLabel = new JLabel("Create Password");
+        panel.add(passwordLabel);
+        JPasswordField passwordField = new JPasswordField(20);
+        panel.add(passwordField);
+
+        JButton enterButton = new JButton("Create Account");
+        panel.add(enterButton);
+        JButton backButton = new JButton("Back");
+        panel.add(backButton);
+
+        JLabel welcome = new JLabel("Please enter username and password below.\n");
+        panel.add(welcome);
+
+
+        enterButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String username = usernameField.getText().trim();
+                String password = new String(passwordField.getPassword()).trim();
+                try {
+                    writer.write("CHECK_USERNAME");
+                    writer.println();
+                    writer.write(username);
+                    writer.println();
+                    writer.flush();
+                    // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+                    if ((reader.readLine()).equals("false")) {
+                        JOptionPane.showMessageDialog(frame, "Username taken! Please try again with another.");
+                        //return; //if login methods returns false (the username already exits), program returns to showLoginMenu
+                        // method writes error to terminal.
+                    } else {
+                        writer.write("CREATE_ACCOUNT");
+                        writer.println();
+                        writer.write(username);
+                        writer.println();
+                        writer.write(password);
+                        writer.println();
+                        writer.flush();
+                        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+                        if ((reader.readLine()).equals("true")) { //if the account is created successfully
+                            frame.dispose();
+                            JOptionPane.showMessageDialog(frame, "Account Created Successfully. " +
+                                    "Sign in using 'Login'.");
+                            new User(username, password);
+                            showLoginMenu(scan);
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "There was an error creating your account." +
+                                    " Please try again.");
+
+                        }
+                    }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error occurred during account creation: "
+                            + ex.getMessage());
+                }
+            }
+        });
+
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Close the login window when returning to the login menu
+                showLoginMenu(scan);
+            }
+        });
+
+
+        frame.add(panel);
+        frame.setSize(400, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+        /*try {
             System.out.println("Enter your desired username or enter 'back' to return to the Login Menu:");
             String username = scan.nextLine().trim();
             if ("back".equalsIgnoreCase(username)) {
-                return; // Return to showLoginMenu
+                showLoginMenu(scan);
+                //return; // Return to showLoginMenu
             }
             writer.write("CHECK_USERNAME");
             writer.println();
@@ -142,13 +331,15 @@ public class MainApplication extends Thread {
             // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
             if ((reader.readLine()).equals("false")) {
                 System.out.println("Username taken! Please try again with another.");
-                return; //if login methods returns false (the username already exits), program returns to showLoginMenu
+                showLoginMenu(scan);
+                //return; //if login methods returns false (the username already exits), program returns to showLoginMenu
                 // method writes error to terminal.
             }
             System.out.println("Enter your desired password or enter 'back' to return to the Login Menu:");
             String password = scan.nextLine().trim();
             if ("back".equalsIgnoreCase(password)) {
-                return; // Return to showLoginMenu
+                showLoginMenu(scan);
+                //return; // Return to showLoginMenu
             }
             writer.write("CREATE_ACCOUNT");
             writer.println();
@@ -166,47 +357,87 @@ public class MainApplication extends Thread {
             }
         } catch (IOException e) {
             // NEED SOMETHING IN HERE
-        }
+        }*/
 
     } //accountCreationProcess
 
     private void showMainMenu(User currentUser, Scanner scan) {
-        String choice;
-        do {
-            // Showing main menu options
-            System.out.println("\nMain Menu");
-            System.out.println("1. Search for a user");
-            System.out.println("2. Account settings");
-            System.out.println("3. Logout");
-            System.out.println("Enter choice:");
+        JFrame frame = new JFrame("Main Menu");
+        JPanel panel = new JPanel();
+        JLabel messageLabel = new JLabel("Please select an option:");
+        JButton searchButton = new JButton("Search for a user");
+        JButton accountSettingsButton = new JButton("Account settings");
+        JButton logoutButton = new JButton("Logout");
 
-            choice = scan.nextLine().trim();
+        panel.add(messageLabel);
+        panel.add(searchButton);
+        panel.add(accountSettingsButton);
+        panel.add(logoutButton);
 
-            switch (choice) {
-                case "1": // "Search for a user" option
-                    searchProcess(currentUser, scan);
-                    break; // breaks out of switch, re-displays menu options
-                case "2": // "Account settings" option
-                    // Placeholder for account settings functionality
-                    showAccountSettings(currentUser, scan);
-                    break; // breaks out of switch, re-displays menu options
-                case "3": // "Logout" option.
-                    System.out.println("Logging out...");
-                    //currentUser.writeToFile();
-                    break; // breaks out of switch, re-displays menu options
-                default: // if user inputs anything but the 3 choices
-                    System.out.println("Invalid choice. Please try again.");
-                    break; // breaks out of switch, re-displays menu options
-            } // end switch
+        searchButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                searchProcess(currentUser, scan);
+            }
+        });
 
-        } while (!choice.equals("3"));
+        accountSettingsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showAccountSettings(currentUser, scan);
+            }
+        });
+
+        logoutButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Close the main menu window
+                try {
+                    loginProcess(scan);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        });
+
+        frame.add(panel);
+        frame.setSize(300, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+        /*String choice;
+        //do {
+        // Showing main menu options
+        System.out.println("\nMain Menu");
+        System.out.println("1. Search for a user");
+        System.out.println("2. Account settings");
+        System.out.println("3. Logout");
+        System.out.println("Enter choice:");
+
+        choice = scan.nextLine().trim();
+
+        switch (choice) {
+            case "1": // "Search for a user" option
+                searchProcess(currentUser, scan);
+                break; // breaks out of switch, re-displays menu options
+            case "2": // "Account settings" option
+                // Placeholder for account settings functionality
+                showAccountSettings(currentUser, scan);
+                break; // breaks out of switch, re-displays menu options
+            case "3": // "Logout" option.
+                System.out.println("Logging out...");
+                //currentUser.writeToFile();
+                break; // breaks out of switch, re-displays menu options
+            default: // if user inputs anything but the 3 choices
+                System.out.println("Invalid choice. Please try again.");
+                break; // breaks out of switch, re-displays menu options
+        } */
+        //} while (!choice.equals("3"));
         // This loop will continue until the user chooses "logout"
     } //showMainMenu
 
     private void showAccountSettings(User currentUser, Scanner scan) {
         // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
         String choice;
-        do {
+        //do {
             // Showing account settings options
             System.out.println("\nAccount Settings");
             System.out.println("1. Change account password");
@@ -223,13 +454,14 @@ public class MainApplication extends Thread {
                     changeDirectMessageSetting(currentUser, scan);
                     break; //breaks out of switch, re displaying account settings options.
                 case "3": //"Return to Main Menu"
+                    showMainMenu(currentUser, scan);
                     System.out.println("Returning...");
                     break; //breaks out of switch, re displaying account settings options.
                 default: // if choice is anything but the three options
                     System.out.println("Invalid choice. Please try again.");
                     break; //breaks out of switch, re displaying account settings options.
             } //end switch
-        } while (!choice.equals("3"));
+        //} while (!choice.equals("3"));
     } //showAccountSettings
 
     private void changePasswordProcess(User currentUser, Scanner scan) {
@@ -240,10 +472,12 @@ public class MainApplication extends Thread {
             String oldPassword = scan.nextLine().trim();
 
             if ("back".equalsIgnoreCase(oldPassword)) {
+                showAccountSettings(currentUser, scan);
                 return; // returns to showAccountSettings
             }
             if (!(oldPassword.equals(currentUser.getPassword()))) {
                 System.out.println("Incorrect Password. Try again");
+                showAccountSettings(currentUser, scan);
                 return; // returns to showAccountSettings
             }
             System.out.println("Enter your new password");
@@ -251,6 +485,7 @@ public class MainApplication extends Thread {
 
             String newPassword = scan.nextLine().trim();
             if ("back".equalsIgnoreCase(newPassword)) {
+                showAccountSettings(currentUser, scan);
                 return; // returns to showAccountSettings
             }
             currentUser.setPassword(newPassword);
@@ -280,7 +515,7 @@ public class MainApplication extends Thread {
         try {
             // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
             String choice;
-            do {
+            //do {
                 // Showing direct messaging setting options
                 System.out.println("Direct Messaging Privacy Choices:");
                 System.out.println("1. Open to everyone");
@@ -335,13 +570,14 @@ public class MainApplication extends Thread {
                         }
                         return; //returns back to showAccountSettings
                     case "3":
+                        showMainMenu(currentUser, scan);
                         System.out.println("Returning...");
                         break;
                     default:
                         System.out.println("Invalid choice. Please try again.");
                         break; // breaks out of switch, re displays the direct message options
                 }
-            } while (!choice.equals("3"));
+            //} while (!choice.equals("3"));
         } catch (IOException e) {
             // NEED SOMETHING IN HERE
         }
@@ -533,25 +769,79 @@ public class MainApplication extends Thread {
         });
 
         backButton.addActionListener(e -> {
-            searchProcess(currentUser, scan);
             frame.dispose();
+            searchProcess(currentUser, scan);
         });
     } //userViewerMenu
 
     private void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
-            try {
-                writer.write("CHECK_DIRECT\n"); //sends command to check if they can direct message
-                writer.write(currentUser.getUsername() + "\n");
-                writer.write(searchedUser.getUsername() + "\n");
+        try {
+            writer.write("CHECK_DIRECT\n"); //sends command to check if they can direct message
+            writer.write(currentUser.getUsername() + "\n");
+            writer.write(searchedUser.getUsername() + "\n");
+            writer.flush();
+
+            String status = reader.readLine();
+
+            if (!status.equals("GOOD_TO_MESSAGE")) {
+                JOptionPane.showMessageDialog(null, status, "Error", JOptionPane.ERROR_MESSAGE);
+            } else { // if they are allowed to direct message! completes actions below.
+
+                writer.write("OPEN_MESSAGES");
+                writer.println();
+                writer.write(currentUser.getUsername());
+                writer.println();
+                writer.write(searchedUser.getUsername());
+                writer.println();
                 writer.flush();
 
-                String status = reader.readLine();
+                String opened = reader.readLine();
+                if (opened.equals("false")) {
+                    JOptionPane.showMessageDialog(null, "An error occurred trying to access your messages",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                } else { // if no error occurred while opening messages
+                    JFrame frame = new JFrame("Friendify - Direct Message");
+                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                    frame.setSize(700, 500);
+                    frame.setLayout(new BorderLayout());
 
-                if (!status.equals("GOOD_TO_MESSAGE")) {
-                    JOptionPane.showMessageDialog(null, status, "Error", JOptionPane.ERROR_MESSAGE);
-                } else { // if they are allowed to direct message! completes actions below.
+                    // Header panel with title
+                    JLabel headerLabel = new JLabel("FRIENDIFY\n", SwingConstants.CENTER);
+                    headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
+                    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                    headerPanel.add(headerLabel, BorderLayout.CENTER);
+                    headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                    frame.add(headerPanel, BorderLayout.NORTH);
 
-                    writer.write("OPEN_MESSAGES");
+                    JPanel sidePanel = new JPanel();
+                    sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+                    JTextPane deleteInstructions = new JTextPane();
+                    deleteInstructions.setEditable(false);
+                    deleteInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
+                    deleteInstructions.setText("Select a message,then press \nthe 'Delete Message' button.");
+                    sidePanel.add(deleteInstructions);
+                    JButton deleteMessageButton = new JButton("Delete Message");
+                    deleteMessageButton.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
+                    sidePanel.add(deleteMessageButton);
+                    frame.add(sidePanel, BorderLayout.EAST);
+
+                    DefaultListModel<String> listModel = new DefaultListModel<>();
+                    JList<String> messageList = new JList<>(listModel);
+                    JScrollPane scrollPane = new JScrollPane(messageList);
+                    frame.add(scrollPane, BorderLayout.CENTER);
+
+                    JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                    JButton sendMessageButton = new JButton("Send Message");
+                    JTextField messageField = new JTextField(50);
+                    inputPanel.add(messageField);
+                    inputPanel.add(sendMessageButton);
+                    frame.add(inputPanel, BorderLayout.SOUTH);
+
+                    frame.setLocationRelativeTo(null); // CENTERS THE WINDOW
+                    frame.setResizable(false); // USER CANNOT RESIZE THE WINDOW
+                    frame.setVisible(true);
+
+                    writer.write("READ_AND_DISPLAY_MESSAGES");
                     writer.println();
                     writer.write(currentUser.getUsername());
                     writer.println();
@@ -559,160 +849,106 @@ public class MainApplication extends Thread {
                     writer.println();
                     writer.flush();
 
-                    String opened = reader.readLine();
-                    if (opened.equals("false")) {
-                        JOptionPane.showMessageDialog(null, "An error occurred trying to access your messages",
-                                "Error", JOptionPane.ERROR_MESSAGE);
-                    } else { // if no error occurred while opening messages
-                        JFrame frame = new JFrame("Friendify - Direct Message");
-                        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                        frame.setSize(700, 500);
-                        frame.setLayout(new BorderLayout());
-
-                        // Header panel with title
-                        JLabel headerLabel = new JLabel("FRIENDIFY\n", SwingConstants.CENTER);
-                        headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
-                        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                        headerPanel.add(headerLabel, BorderLayout.CENTER);
-                        headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-                        frame.add(headerPanel, BorderLayout.NORTH);
-
-                        JPanel sidePanel = new JPanel();
-                        sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-                        JTextPane deleteInstructions = new JTextPane();
-                        deleteInstructions.setEditable(false);
-                        deleteInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
-                        deleteInstructions.setText("Select a message,then press \nthe 'Delete Message' button.");
-                        sidePanel.add(deleteInstructions);
-                        JButton deleteMessageButton = new JButton("Delete Message");
-                        deleteMessageButton.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
-                        sidePanel.add(deleteMessageButton);
-                        frame.add(sidePanel, BorderLayout.EAST);
-
-                        DefaultListModel<String> listModel = new DefaultListModel<>();
-                        JList<String> messageList = new JList<>(listModel);
-                        JScrollPane scrollPane = new JScrollPane(messageList);
-                        frame.add(scrollPane, BorderLayout.CENTER);
-
-                        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                        JButton sendMessageButton = new JButton("Send Message");
-                        JTextField messageField = new JTextField(50);
-                        inputPanel.add(messageField);
-                        inputPanel.add(sendMessageButton);
-                        frame.add(inputPanel, BorderLayout.SOUTH);
-
-                        frame.setLocationRelativeTo(null); // CENTERS THE WINDOW
-                        frame.setResizable(false); // USER CANNOT RESIZE THE WINDOW
-                        frame.setVisible(true);
-
-                        writer.write("READ_AND_DISPLAY_MESSAGES");
-                        writer.println();
-                        writer.write(currentUser.getUsername());
-                        writer.println();
-                        writer.write(searchedUser.getUsername());
-                        writer.println();
-                        writer.flush();
-
-                        String results = reader.readLine().trim();
-                        ArrayList<String> messages = new ArrayList<>();
-                        if (results.equals("No Messages")) {
-                            messages.add("No messages to display");
-                        } else {
-                            int numResults = Integer.parseInt(results);
-                            for (int i = 0; i < numResults; i++) {
-                                String message = reader.readLine();
-                                messages.add(message);
-                            }
+                    String results = reader.readLine().trim();
+                    ArrayList<String> messages = new ArrayList<>();
+                    if (results.equals("No Messages")) {
+                        messages.add("No messages to display");
+                    } else {
+                        int numResults = Integer.parseInt(results);
+                        for (int i = 0; i < numResults; i++) {
+                            String message = reader.readLine();
+                            messages.add(message);
                         }
-                        messages.forEach(listModel::addElement);
+                    }
+                    messages.forEach(listModel::addElement);
 
-                        sendMessageButton.addActionListener(e -> {
-                            String message = messageField.getText().trim();
-                            if (message.isEmpty()) {
-                                JOptionPane.showMessageDialog(frame, "Message cannot be empty. Try again.",
+                    sendMessageButton.addActionListener(e -> {
+                        String message = messageField.getText().trim();
+                        if (message.isEmpty()) {
+                            JOptionPane.showMessageDialog(frame, "Message cannot be empty. Try again.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            writer.write("SEND_MESSAGE");
+                            writer.println();
+                            writer.write(currentUser.getUsername());
+                            writer.println();
+                            writer.write(searchedUser.getUsername());
+                            writer.println();
+                            writer.write(message);
+                            writer.println();
+                            writer.flush();
+                            try {
+                                if (reader.readLine().equals("false")) {
+                                    JOptionPane.showMessageDialog(frame, "Error sending message. Try again.",
+                                            "Error", JOptionPane.ERROR_MESSAGE);
+                                } else {
+                                    listModel.clear(); //reset messageDisplay
+                                    writer.write("READ_AND_DISPLAY_MESSAGES"); // fetch messages again
+                                    writer.println();
+                                    writer.write(currentUser.getUsername());
+                                    writer.println();
+                                    writer.write(searchedUser.getUsername());
+                                    writer.println();
+                                    writer.flush();
+
+                                    String r = reader.readLine().trim();
+                                    ArrayList<String> m = new ArrayList<>();
+                                    if (r.equals("No Messages")) {
+                                        m.add("No messages to display");
+                                    } else {
+                                        int numResults = Integer.parseInt(r);
+                                        for (int i = 0; i < numResults; i++) {
+                                            String ms = reader.readLine();
+                                            m.add(ms);
+                                        }
+                                    }
+                                    m.forEach(listModel::addElement);
+                                }
+                            } catch (IOException ex) {
+                                JOptionPane.showMessageDialog(frame, "Error communicating with server.",
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+                            }
+                            messageField.setText("");
+                        }
+                    });
+
+                    deleteMessageButton.addActionListener(e -> {
+                        int selectedIndex  = messageList.getSelectedIndex();
+                        if (selectedIndex != -1) {
+                            if (!listModel.getElementAt(selectedIndex).startsWith(currentUser.getUsername())) {
+                                JOptionPane.showMessageDialog(frame, "You can only delete your own messages",
                                         "Error", JOptionPane.ERROR_MESSAGE);
                             } else {
-                                writer.write("SEND_MESSAGE");
+                                listModel.remove(selectedIndex);
+                                writer.write("WRITE_MESSAGES");
                                 writer.println();
-                                writer.write(currentUser.getUsername());
-                                writer.println();
-                                writer.write(searchedUser.getUsername());
-                                writer.println();
-                                writer.write(message);
-                                writer.println();
+                                writer.write(currentUser.getUsername() + "\n");
+                                writer.write(searchedUser.getUsername() + "\n");
+                                writer.write(listModel.getSize() + "\n");
                                 writer.flush();
+                                for (int i = 0; i < listModel.getSize(); i++) {
+                                    writer.write(listModel.getElementAt(i));
+                                    writer.println();
+                                    writer.flush();
+                                }
                                 try {
                                     if (reader.readLine().equals("false")) {
-                                        JOptionPane.showMessageDialog(frame, "Error sending message. Try again.",
+                                        JOptionPane.showMessageDialog(frame, "Error Deleting Message.",
                                                 "Error", JOptionPane.ERROR_MESSAGE);
-                                    } else {
-                                        listModel.clear(); //reset messageDisplay
-                                        writer.write("READ_AND_DISPLAY_MESSAGES"); // fetch messages again
-                                        writer.println();
-                                        writer.write(currentUser.getUsername());
-                                        writer.println();
-                                        writer.write(searchedUser.getUsername());
-                                        writer.println();
-                                        writer.flush();
-
-                                        String r = reader.readLine().trim();
-                                        ArrayList<String> m = new ArrayList<>();
-                                        if (r.equals("No Messages")) {
-                                            m.add("No messages to display");
-                                        } else {
-                                            int numResults = Integer.parseInt(r);
-                                            for (int i = 0; i < numResults; i++) {
-                                                String ms = reader.readLine();
-                                                m.add(ms);
-                                            }
-                                        }
-                                        m.forEach(listModel::addElement);
                                     }
                                 } catch (IOException ex) {
                                     JOptionPane.showMessageDialog(frame, "Error communicating with server.",
                                             "Error", JOptionPane.ERROR_MESSAGE);
                                 }
-                                messageField.setText("");
                             }
-                        });
+                        }
+                    });
 
-                        deleteMessageButton.addActionListener(e -> {
-                            int selectedIndex  = messageList.getSelectedIndex();
-                            if (selectedIndex != -1) {
-                                if (!listModel.getElementAt(selectedIndex).startsWith(currentUser.getUsername())) {
-                                    JOptionPane.showMessageDialog(frame, "You can only delete your own messages",
-                                            "Error", JOptionPane.ERROR_MESSAGE);
-                                } else {
-                                    listModel.remove(selectedIndex);
-                                    writer.write("WRITE_MESSAGES");
-                                    writer.println();
-                                    writer.write(currentUser.getUsername() + "\n");
-                                    writer.write(searchedUser.getUsername() + "\n");
-                                    writer.write(listModel.getSize() + "\n");
-                                    writer.flush();
-                                    for (int i = 0; i < listModel.getSize(); i++) {
-                                        writer.write(listModel.getElementAt(i));
-                                        writer.println();
-                                        writer.flush();
-                                    }
-                                    try {
-                                        if (reader.readLine().equals("false")) {
-                                            JOptionPane.showMessageDialog(frame, "Error Deleting Message.",
-                                                    "Error", JOptionPane.ERROR_MESSAGE);
-                                        }
-                                    } catch (IOException ex) {
-                                        JOptionPane.showMessageDialog(frame, "Error communicating with server.",
-                                                "Error", JOptionPane.ERROR_MESSAGE);
-                                    }
-                                }
-                            }
-                        });
-
-                    } //end inner else
-                }//end outer ELSE
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(null, "Error communicating with server.",
-                        "Error", JOptionPane.ERROR_MESSAGE);            }
+                } //end inner else
+            }//end outer ELSE
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error communicating with server.",
+                    "Error", JOptionPane.ERROR_MESSAGE);            }
     } //directMessageMenu
 
 } // End class
