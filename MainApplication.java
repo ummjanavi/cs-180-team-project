@@ -53,7 +53,7 @@ public class MainApplication extends Thread {
     public void run() {
         try (Scanner scan = new Scanner(System.in)) {
             //while (!this.socket.isClosed()) {
-                showLoginMenu(scan);
+            showLoginMenu(scan);
             //}
         } finally {
             /*try {
@@ -149,11 +149,11 @@ public class MainApplication extends Thread {
         JPanel panel = new JPanel();
         JLabel welcomeLabel = new JLabel("Enter Username");
         panel.add(welcomeLabel);
-        JTextField usernameField = new JTextField(20);
+        JTextField usernameField = new JTextField(30);
         panel.add(usernameField);
         JLabel passwordLabel = new JLabel("Enter Password");
         panel.add(passwordLabel);
-        JPasswordField passwordField = new JPasswordField(20);
+        JPasswordField passwordField = new JPasswordField(30);
         panel.add(passwordField);
 
         JButton enterButton = new JButton("Login");
@@ -364,7 +364,7 @@ public class MainApplication extends Thread {
     private void showMainMenu(User currentUser, Scanner scan) {
         JFrame frame = new JFrame("Main Menu");
         JPanel panel = new JPanel();
-        JLabel messageLabel = new JLabel("Please select an option:");
+        JLabel messageLabel = new JLabel("           Please select an option:               ");
         JButton searchButton = new JButton("Search for a user");
         JButton accountSettingsButton = new JButton("Account settings");
         JButton logoutButton = new JButton("Logout");
@@ -436,36 +436,135 @@ public class MainApplication extends Thread {
 
     private void showAccountSettings(User currentUser, Scanner scan) {
         // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+
+        JFrame frame = new JFrame("Account Settings");
+        JPanel panel = new JPanel();
+        JLabel messageLabel = new JLabel("           Please select an option:          ");
+        JButton changePassword = new JButton("Change account password");
+        JButton dMPrivacy = new JButton("Change direct messaging privacy");
+        JButton retToMain = new JButton("Return to main menu");
+
+        panel.add(messageLabel);
+        panel.add(changePassword);
+        panel.add(dMPrivacy);
+        panel.add(retToMain);
+
+        /*
         String choice;
         //do {
-            // Showing account settings options
-            System.out.println("\nAccount Settings");
-            System.out.println("1. Change account password");
-            System.out.println("2. Change direct messaging privacy");
-            System.out.println("3. Return to Main Menu");
-            System.out.println("Enter choice:");
+        // Showing account settings options
+        System.out.println("\nAccount Settings");
+        System.out.println("1. Change account password");
+        System.out.println("2. Change direct messaging privacy");
+        System.out.println("3. Return to Main Menu");
+        System.out.println("Enter choice:");
 
-            choice = scan.nextLine().trim();
-            switch (choice) {
-                case "1": // "Change account password" option.
-                    changePasswordProcess(currentUser, scan);
-                    break; //breaks out of switch, re displaying account settings options.
-                case "2": // "Change direct messaging privacy" option.
-                    changeDirectMessageSetting(currentUser, scan);
-                    break; //breaks out of switch, re displaying account settings options.
-                case "3": //"Return to Main Menu"
-                    showMainMenu(currentUser, scan);
-                    System.out.println("Returning...");
-                    break; //breaks out of switch, re displaying account settings options.
-                default: // if choice is anything but the three options
-                    System.out.println("Invalid choice. Please try again.");
-                    break; //breaks out of switch, re displaying account settings options.
-            } //end switch
+        choice = scan.nextLine().trim();
+        switch (choice) {
+            case "1": // "Change account password" option.
+                changePasswordProcess(currentUser, scan);
+                break; //breaks out of switch, re displaying account settings options.
+            case "2": // "Change direct messaging privacy" option.
+                changeDirectMessageSetting(currentUser, scan);
+                break; //breaks out of switch, re displaying account settings options.
+            case "3": //"Return to Main Menu"
+                showMainMenu(currentUser, scan);
+                System.out.println("Returning...");
+                break; //breaks out of switch, re displaying account settings options.
+            default: // if choice is anything but the three options
+                System.out.println("Invalid choice. Please try again.");
+                break; //breaks out of switch, re displaying account settings options.
+        } //end switch
         //} while (!choice.equals("3"));
+         */
+        changePassword.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                changePasswordProcess(currentUser, scan);
+            }
+        });
+        dMPrivacy.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                changeDirectMessageSetting(currentUser, scan);
+            }
+        });
+        retToMain.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose(); // Close the settings menu window
+            }
+        });
+
+        frame.add(panel);
+        frame.setSize(400, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
     } //showAccountSettings
 
     private void changePasswordProcess(User currentUser, Scanner scan) {
-        try {
+
+        JFrame frame = new JFrame("Change Password");
+        JPanel panel = new JPanel();
+        JLabel welcome = new JLabel("To change your password, enter your old password.\n");
+        panel.add(welcome);
+        JLabel welcomeLabel = new JLabel("Old Password");
+        panel.add(welcomeLabel);
+        JTextField usernameField = new JTextField(30);
+        panel.add(usernameField);
+        JLabel passwordLabel = new JLabel("New Password");
+        panel.add(passwordLabel);
+        JTextField updatedPassword = new JPasswordField(30);
+        panel.add(updatedPassword);
+
+        JButton enterButton = new JButton("Enter");
+        panel.add(enterButton);
+        JButton cancelButton = new JButton("Cancel");
+        panel.add(cancelButton);
+
+        cancelButton.addActionListener(new ActionListener() { // if cancel button pressed
+            public void actionPerformed(ActionEvent e) {
+                frame.dispose();
+            }
+        });
+        enterButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String oldPass = usernameField.getText().trim();
+                String password = updatedPassword.getText().trim();
+
+                if (!(oldPass.equals(currentUser.getPassword()))) {
+                    JOptionPane.showMessageDialog(frame, "Incorrect old password");
+                } else {
+                    try {
+                        currentUser.setPassword(password);
+                        writer.write("CHANGE_PASSWORD");
+                        writer.println();
+                        writer.write(currentUser.getUsername());
+                        writer.println();
+                        writer.write(password);
+                        writer.println();
+                        writer.flush();
+
+                        if ((reader.readLine()).equals("true")) {
+                            JOptionPane.showMessageDialog(frame, "Password change Successful!");
+                            //User currentUser = new User(username); //Calls User(username) to read the user's
+                            // file and create currentUser
+                            frame.dispose();
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "Password change failed for some reason");
+                        }
+                    } catch (IOException ex) {
+                        JOptionPane.showMessageDialog(frame, "Error occurred during change: " + ex.getMessage());
+                    }
+                }
+            }
+        });
+        frame.add(panel);
+        frame.setSize(400, 200);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+
+            /*
+
             // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
             System.out.println("To change your password, enter your old password.");
             System.out.println("or enter 'back' to return");
@@ -508,32 +607,32 @@ public class MainApplication extends Thread {
         } catch (IOException e) {
             // NEED SOMETHING IN HERE
         }
+            */
 
     } //changePasswordProcess()
 
     private void changeDirectMessageSetting(User currentUser, Scanner scan) {
         try {
-            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-            String choice;
-            //do {
-                // Showing direct messaging setting options
-                System.out.println("Direct Messaging Privacy Choices:");
-                System.out.println("1. Open to everyone");
-                System.out.println("2. Open to just your friends");
-                System.out.println("3. Cancel");
-                System.out.println("Enter choice:");
 
-                choice = scan.nextLine().trim();
-                boolean oldSetting = currentUser.isOpenMessaging();
-                switch (choice) {
-                    case "1": //"Open to everyone"
-                        //currentUser.setOpenMessaging(true);
+            JFrame frame = new JFrame("Change DM settings");
+            JPanel panel = new JPanel();
+            JLabel welcome = new JLabel("            Direct Messaging Privacy Choices:                ");
+            panel.add(welcome);
+            JButton toPublic = new JButton("Open to everyone");
+            panel.add(toPublic);
+            JButton toPrivate = new JButton("Open to friends only");
+            panel.add(toPrivate);
+            JButton cancelButton = new JButton("Cancel");
+            panel.add(cancelButton);
+            boolean oldSetting = currentUser.isOpenMessaging();
+            toPublic.addActionListener(new ActionListener() { // if cancel button pressed
+                public void actionPerformed(ActionEvent e) {
+                    try {
                         writer.write("SET_OPEN_MESSAGING_TRUE");
                         writer.println();
                         writer.write(currentUser.getUsername());
                         writer.println();
                         writer.flush();
-                        //if (!currentUser.writeToFile()) {
                         if (reader.readLine().equals("false")) {
                             //currentUser.setOpenMessaging(oldSetting);
                             writer.write("SET_OPEN_MESSAGING");
@@ -543,13 +642,20 @@ public class MainApplication extends Thread {
                             writer.write(String.valueOf(oldSetting));
                             writer.println();
                             writer.flush();
-                            System.out.println("An error occurred. Could not update your settings.");
-                            break; // breaks out of switch, re displays the direct message options
+                            JOptionPane.showMessageDialog(frame, "Setting update failed for some reason");
                         } else {
-                            System.out.println("Successfully updated your direct messaging to open to all users.");
+                            JOptionPane.showMessageDialog(frame,
+                                    "Successfully updated to all users.\n");
+                            frame.dispose();
                         }
-                        return; //returns back to showAccountSettings
-                    case "2":
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            toPrivate.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    try {
                         currentUser.setOpenMessaging(false);
                         writer.write("SET_OPEN_MESSAGING_FALSE");
                         writer.println();
@@ -563,25 +669,105 @@ public class MainApplication extends Thread {
                             writer.write(String.valueOf(oldSetting));
                             writer.println();
                             writer.flush();
-                            System.out.println("An error occurred. Could not update your settings.");
-                            break; // breaks out of switch, re displays the direct message options
+                            JOptionPane.showMessageDialog(frame, "Setting update failed for some reason");
                         } else {
-                            System.out.println("Successfully updated your direct messaging to open to only friends.");
+                            JOptionPane.showMessageDialog(frame,
+                                    "Successfully updated to friends only.\n");
+                            frame.dispose();
                         }
-                        return; //returns back to showAccountSettings
-                    case "3":
-                        showMainMenu(currentUser, scan);
-                        System.out.println("Returning...");
-                        break;
-                    default:
-                        System.out.println("Invalid choice. Please try again.");
-                        break; // breaks out of switch, re displays the direct message options
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                 }
+            });
+            cancelButton.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    frame.dispose();
+                }
+            });
+            frame.add(panel);
+            frame.setSize(400, 200);
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+
+            /*
+
+            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
+            String choice;
+            //do {
+            // Showing direct messaging setting options
+            System.out.println("Direct Messaging Privacy Choices:");
+            System.out.println("1. Open to everyone");
+            System.out.println("2. Open to just your friends");
+            System.out.println("3. Cancel");
+            System.out.println("Enter choice:");
+
+            choice = scan.nextLine().trim();
+            boolean oldSetting = currentUser.isOpenMessaging();
+            switch (choice) {
+                case "1": //"Open to everyone"
+                    //currentUser.setOpenMessaging(true);
+                    writer.write("SET_OPEN_MESSAGING_TRUE");
+                    writer.println();
+                    writer.write(currentUser.getUsername());
+                    writer.println();
+                    writer.flush();
+                    //if (!currentUser.writeToFile()) {
+                    if (reader.readLine().equals("false")) {
+                        //currentUser.setOpenMessaging(oldSetting);
+                        writer.write("SET_OPEN_MESSAGING");
+                        writer.println();
+                        writer.write(currentUser.getUsername());
+                        writer.println();
+                        writer.write(String.valueOf(oldSetting));
+                        writer.println();
+                        writer.flush();
+                        System.out.println("An error occurred. Could not update your settings.");
+                        break; // breaks out of switch, re displays the direct message options
+                    } else {
+                        System.out.println("Successfully updated your direct messaging to open to all users.");
+                    }
+                    return; //returns back to showAccountSettings
+                case "2":
+                    currentUser.setOpenMessaging(false);
+                    writer.write("SET_OPEN_MESSAGING_FALSE");
+                    writer.println();
+                    writer.write(currentUser.getUsername());
+                    writer.println();
+                    writer.flush();
+                    if (reader.readLine().equals("false")) {
+                        currentUser.setOpenMessaging(oldSetting);
+                        writer.write("SET_OPEN_MESSAGING");
+                        writer.println();
+                        writer.write(String.valueOf(oldSetting));
+                        writer.println();
+                        writer.flush();
+                        System.out.println("An error occurred. Could not update your settings.");
+                        break; // breaks out of switch, re displays the direct message options
+                    } else {
+                        System.out.println("Successfully updated your direct messaging to open to only friends.");
+                    }
+                    return; //returns back to showAccountSettings
+                case "3":
+                    showMainMenu(currentUser, scan);
+                    System.out.println("Returning...");
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break; // breaks out of switch, re displays the direct message options
+            }
             //} while (!choice.equals("3"));
-        } catch (IOException e) {
+
+            */
+
+        } catch (Exception e) { // was ioExeption but intellij got mad
             // NEED SOMETHING IN HERE
+            e.printStackTrace(); // how bout this
         }
     } //directMessageSettings
+
+
     private void searchProcess(User currentUser, Scanner scan) {
         // Setup JFrame for GUI
         JFrame frame = new JFrame("Friendify - Search Users");
