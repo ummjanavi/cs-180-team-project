@@ -1,25 +1,8 @@
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 
-public class LoginMethods {
-
-//        public boolean checkUsername(String username) {
-//            try {
-//                FileReader fr = new FileReader("ummjanavi.txt");
-//                BufferedReader bfr = new BufferedReader(fr);
-//                String line = bfr.readLine();
-//                while (line != null) {
-//                    if (line.equals(username)) {
-//                        //System.out.println("Username taken! Please chose another.");
-//                        return false;
-//                    }
-//                }
-//            } catch (Exception e) {
-//                return false;
-//            }
-//            return true;
-//        }
+public class LoginMethods implements LoginInterface {
 
     public boolean checkUsername(String username) {
         File userFile = new File(username + ".txt");
@@ -28,7 +11,7 @@ public class LoginMethods {
         if (!(userFile.exists())) {
             return true;
         } else {
-            //System.out.println ("Username taken! Please try again with another.");
+            System.out.println ("Username taken! Please try again with another.");
             return false;
         }
         // I changed this because the previous code was checking
@@ -43,7 +26,7 @@ public class LoginMethods {
             bw.write(username + "\n"); // added new line
             bw.write(password + "\n");
         } catch (IOException e) {
-            //System.out.println("An error occurred while creating the user account.\nReturning to Login Menu.");
+            System.out.println("An error occurred while creating the user account.\nReturning to Login Menu.");
             return false;
         }
         return true; // Account creation was successful
@@ -85,14 +68,14 @@ public class LoginMethods {
             String storedPassword = bfr.readLine(); // reading the second line w pass
 
             if (password.equals(storedPassword)) {
-                //System.out.println("Login Successful!");
+                System.out.println("Login Successful!");
                 return true;
             } else {
-                //System.out.println("Login failed. Incorrect username or password.\nReturning to Login Menu");
+                System.out.println("Login failed. Incorrect username or password.\nReturning to Login Menu");
                 return false;
             }
         } catch (IOException e) {
-            //System.out.println("An error occurred while logging in.\nReturning to Login Menu.");
+            System.out.println("An error occurred while logging in.\nReturning to Login Menu.");
             return false;
         }
     } //validate login
