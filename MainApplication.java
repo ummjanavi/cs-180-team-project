@@ -61,6 +61,7 @@ public class MainApplication extends Thread implements MainInterface {
     private void showLoginMenu(Scanner scan) {
         JFrame frame = new JFrame("Welcome to Friendify");
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(216,220,255));
         JLabel welcomeLabel = new JLabel("Please login to an existing account or create a new one");
         panel.add(welcomeLabel);
         JButton loginButton = new JButton("Login");
@@ -103,6 +104,7 @@ public class MainApplication extends Thread implements MainInterface {
     private void loginProcess(Scanner scan) throws IOException {
         JFrame frame = new JFrame("Login");
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(216,220,255));
         JLabel welcomeLabel = new JLabel("Enter Username");
         panel.add(welcomeLabel);
         JTextField usernameField = new JTextField(30);
@@ -117,7 +119,7 @@ public class MainApplication extends Thread implements MainInterface {
         JButton backButton = new JButton("Back");
         panel.add(backButton);
 
-        JLabel welcome = new JLabel("Please enter username and password below.\n");
+        JLabel welcome = new JLabel("Please enter username and password above.\n");
         panel.add(welcome);
 
         enterButton.addActionListener(new ActionListener() {
@@ -167,6 +169,7 @@ public class MainApplication extends Thread implements MainInterface {
     private void accountCreationProcess(Scanner scan) {
         JFrame frame = new JFrame("Create Account");
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(216,220,255));
         JLabel welcomeLabel = new JLabel("Create Username");
         panel.add(welcomeLabel);
         JTextField usernameField = new JTextField(20);
@@ -181,7 +184,7 @@ public class MainApplication extends Thread implements MainInterface {
         JButton backButton = new JButton("Back");
         panel.add(backButton);
 
-        JLabel welcome = new JLabel("Please enter username and password below.\n");
+        JLabel welcome = new JLabel("Please enter username and password above.\n");
         panel.add(welcome);
 
 
@@ -245,6 +248,7 @@ public class MainApplication extends Thread implements MainInterface {
     private void showMainMenu(User currentUser, Scanner scan) {
         JFrame frame = new JFrame("Main Menu");
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(216,220,255));
         JLabel messageLabel = new JLabel("           Please select an option:               ");
         JButton searchButton = new JButton("Search for a user");
         JButton accountSettingsButton = new JButton("Account settings");
@@ -286,6 +290,7 @@ public class MainApplication extends Thread implements MainInterface {
     private void showAccountSettings(User currentUser, Scanner scan) {
         JFrame frame = new JFrame("Account Settings");
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(216,220,255));
         JLabel messageLabel = new JLabel("           Please select an option:          ");
         JButton changePassword = new JButton("Change account password");
         JButton dMPrivacy = new JButton("Change direct messaging privacy");
@@ -319,6 +324,7 @@ public class MainApplication extends Thread implements MainInterface {
     private void changePasswordProcess(User currentUser, Scanner scan) {
         JFrame frame = new JFrame("Change Password");
         JPanel panel = new JPanel();
+        panel.setBackground(new Color(216,220,255));
         JLabel welcome = new JLabel("To change your password, enter your old password.\n");
         panel.add(welcome);
         JLabel welcomeLabel = new JLabel("Old Password");
@@ -378,9 +384,9 @@ public class MainApplication extends Thread implements MainInterface {
 
     private void changeDirectMessageSetting(User currentUser, Scanner scan) {
         try {
-
             JFrame frame = new JFrame("Change DM settings");
             JPanel panel = new JPanel();
+            panel.setBackground(new Color(216,220,255));
             JLabel welcome = new JLabel("            Direct Messaging Privacy Choices:                ");
             panel.add(welcome);
             JButton toPublic = new JButton("Open to everyone");
@@ -478,6 +484,7 @@ public class MainApplication extends Thread implements MainInterface {
         JLabel headerLabel = new JLabel("FRIENDIFY", SwingConstants.CENTER);
         headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
         JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(216,220,255));
         headerPanel.add(headerLabel, BorderLayout.CENTER);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 125, 10));
 
@@ -488,6 +495,7 @@ public class MainApplication extends Thread implements MainInterface {
 
         // Input area for searching
         JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        inputPanel.setBackground(new Color(216,220,255));
         JTextField searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
         inputPanel.add(searchField);
@@ -497,6 +505,7 @@ public class MainApplication extends Thread implements MainInterface {
         JButton selectButton = new JButton("Select");
         JButton backButton = new JButton("Back");
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(new Color(216,220,255));
         buttonPanel.add(selectButton);
         buttonPanel.add(backButton);
 
@@ -564,12 +573,14 @@ public class MainApplication extends Thread implements MainInterface {
         JLabel headerLabel = new JLabel("FRIENDIFY", SwingConstants.CENTER);
         headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
         JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setBackground(new Color(216,220,255));
         headerPanel.add(headerLabel, BorderLayout.CENTER);
         headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
 
         // Profile panel with username and picture
         JPanel profilePanel = new JPanel();
+        profilePanel.setBackground(new Color(216,220,255));
         profilePanel.setLayout(new BoxLayout(profilePanel, BoxLayout.PAGE_AXIS));
 
         // Label for the username
@@ -590,6 +601,7 @@ public class MainApplication extends Thread implements MainInterface {
 
         // Buttons for user interactions
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(new Color(216,220,255));
         JButton addFriendButton = new JButton("Add/Remove Friend");
         JButton blockUserButton = new JButton("Block/Unblock");
         JButton directMessageButton = new JButton("Direct Message");
@@ -705,16 +717,19 @@ public class MainApplication extends Thread implements MainInterface {
                 JLabel headerLabel = new JLabel("FRIENDIFY\n", SwingConstants.CENTER);
                 headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
                 JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                headerPanel.setBackground(new Color(216,220,255));
                 headerPanel.add(headerLabel, BorderLayout.CENTER);
                 headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
                 frame.add(headerPanel, BorderLayout.NORTH);
 
                 JPanel sidePanel = new JPanel();
+                sidePanel.setBackground(new Color(216,220,255));
                 sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
                 JTextPane deleteInstructions = new JTextPane();
+                deleteInstructions.setBackground(new Color(216,220,255));
                 deleteInstructions.setEditable(false);
                 deleteInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
-                deleteInstructions.setText("Select a message,then press \nthe 'Delete Message' button.");
+                deleteInstructions.setText("Select a message, then press \nthe 'Delete Message' button.");
                 sidePanel.add(deleteInstructions);
                 JButton backButton = new JButton("Back");
                 JButton deleteMessageButton = new JButton("Delete Message");
@@ -729,8 +744,10 @@ public class MainApplication extends Thread implements MainInterface {
                 frame.add(scrollPane, BorderLayout.CENTER);
 
                 JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                inputPanel.setBackground(new Color(216,220,255));
                 JButton sendMessageButton = new JButton("Send Message");
                 JTextField messageField = new JTextField(50);
+                messageField.setBackground(new Color(216,220,255));
                 inputPanel.add(messageField);
                 inputPanel.add(sendMessageButton);
                 frame.add(inputPanel, BorderLayout.SOUTH);
@@ -848,10 +865,10 @@ public class MainApplication extends Thread implements MainInterface {
                 });
 
             } //end inner else
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(null, "Error communicating with server.",
-                "Error", JOptionPane.ERROR_MESSAGE);
-    }
-} //directMessageMenu
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error communicating with server.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } //directMessageMenu
 
 } // End class
