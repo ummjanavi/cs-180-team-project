@@ -8,31 +8,31 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 /**
  * MainApplication.java
  * <p>
  * This class runs the app, Friendify. This is the main application.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
+ *
  * Lecture 1, Lab 10
- * @version 3/25/2024
+ * @version 4/27/2024
  */
-public class MainApplication extends Thread {
-    //private static LoginMethods loginMethods = new LoginMethods();
-    //private static SearchMethods searchMethods = new SearchMethods();
-    //private static DirectMessageMethods directMessageMethods = new DirectMessageMethods();
+public class MainApplication extends Thread implements MainInterface {
     private Socket socket;
     private BufferedReader reader;
     private PrintWriter writer;
 
-    public MainApplication(Socket socket) throws IOException {
-        this.socket = socket;
-        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        this.writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+    public MainApplication(Socket socket) {
+        try {
+            this.socket = socket;
+            this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()), true);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null, "Error occurred during login: " + ex.getMessage());
+        }
     } // constructor
 
     public static void main(String[] args) {
@@ -41,34 +41,21 @@ public class MainApplication extends Thread {
         MainApplication client = null;
         try {
             client = new MainApplication(new Socket("localhost", 4545));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            client.start();
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(null,
+                    "Error occurred during login: " + ex.getMessage());
         }
         // Start the thread
-        client.start();
     }
 
 
     @Override
     public void run() {
         try (Scanner scan = new Scanner(System.in)) {
-            //while (!this.socket.isClosed()) {
             showLoginMenu(scan);
-            //}
-        } finally {
-            /*try {
-                if (writer != null) writer.close();
-                if (reader != null) reader.close();
-                if (socket != null) socket.close();
-            } catch (IOException f) {
-                JOptionPane.showMessageDialog(null, "Failed to close writer, reader, or socket.", "Error", JOptionPane.ERROR_MESSAGE);
-                //System.out.println("Failed to close writer, reader, or socket.");
-            }*/
         }
-
-        // Repeatedly show the login menu until the application is exited
     } //main()
-
     private void showLoginMenu(Scanner scan) {
         JFrame frame = new JFrame("Welcome to Friendify");
         JPanel panel = new JPanel();
@@ -94,54 +81,21 @@ public class MainApplication extends Thread {
                 accountCreationProcess(scan);
             }
         });
+
         exitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                try {
-                    socket.close();
-                    return;
-                } catch (IOException f) {
-                    throw new RuntimeException(f);
-                }
+                frame.dispose();
             }
         });
+
         panel.add(loginButton);
         panel.add(createAccountButton);
         panel.add(exitButton);
         frame.add(panel);
         frame.setSize(400, 130);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        /*try {
-            System.out.println("\nLogin Menu");
-            System.out.println("1. Login");
-            System.out.println("2. Create Account");
-            System.out.println("Enter choice, or type 'exit' to close application:");
-
-            String choice = scan.nextLine().trim();// Getting user input, 'choice'
-
-            if ("exit".equalsIgnoreCase(choice)) {
-                System.out.println("Exiting application...");
-                socket.close();
-                return;
-            } // if they type exit, ignores case
-
-            switch (choice) {
-                case "1": // "Login" option
-                    loginProcess(scan);
-                    break;
-                case "2": // "Create Account" option
-                    accountCreationProcess(scan);
-                    break;
-                default: // Neither option.
-                    System.out.println("Invalid choice. Please try again.");
-                    break; // Remains in the Login Menu, Re-displaying the options
-            }
-        } catch (IOException e) {
-            // NEED SOMETHING IN HERE
-        }*/
-        // Presenting Login Menu Options
-
     } //showLoginMenu()
 
     private void loginProcess(Scanner scan) throws IOException {
@@ -179,7 +133,8 @@ public class MainApplication extends Thread {
 
                     if ((reader.readLine()).equals("true")) {
                         JOptionPane.showMessageDialog(frame, "Login Successful!");
-                        User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
+                        User currentUser = new User(username);
+                        //Calls User(username) to read the user's file and create currentUser
                         frame.dispose();
                         showMainMenu(currentUser, scan); // Transition to main menu after successful login
                         // Close the login window after successful login
@@ -205,38 +160,6 @@ public class MainApplication extends Thread {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-        /*System.out.println("Enter username or enter 'back' to return to the Login Menu:");
-        String username = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(username)) {
-            showLoginMenu(scan);
-            //return; // Return to showLoginMenu
-        }
-
-        System.out.println("Enter password or enter 'back' to return to the Login Menu:");
-        String password = scan.nextLine().trim();
-        if ("back".equalsIgnoreCase(password)) {
-            showLoginMenu(scan);
-            //return; // Return to showLoginMenu
-        }
-        writer.write("VALIDATE_LOGIN");
-        writer.println();
-        writer.write(username);
-        writer.println();
-        writer.write(password);
-        writer.println();
-        writer.flush();
-
-        //// THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-        if ((reader.readLine()).equals("true")) {
-            System.out.println("Login Successful!");
-            User currentUser = new User(username); //Calls User(username) to read the user's file and create currentUser
-            showMainMenu(currentUser, scan); // Transition to main menu after successful login
-        } else {
-            System.out.println("Login failed. Incorrect username or password.\nReturning to Login Menu");
-            showLoginMenu(scan);
-            //return;
-        }*/
     } //loginProcess()
 
     private void accountCreationProcess(Scanner scan) {
@@ -272,8 +195,9 @@ public class MainApplication extends Thread {
                     writer.flush();
                     // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
                     if ((reader.readLine()).equals("false")) {
-                        JOptionPane.showMessageDialog(frame, "Username taken! Please try again with another.");
-                        //return; //if login methods returns false (the username already exits), program returns to showLoginMenu
+                        JOptionPane.showMessageDialog(frame,
+                                "Username taken! Please try again with another.");
+                        //if login methods returns false (the username already exits), program returns to showLoginMenu
                         // method writes error to terminal.
                     } else {
                         writer.write("CREATE_ACCOUNT");
@@ -303,11 +227,9 @@ public class MainApplication extends Thread {
             }
         });
 
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // Close the login window when returning to the login menu
-                showLoginMenu(scan);
-            }
+        backButton.addActionListener(e -> {
+            frame.dispose(); // Close the login window when returning to the login menu
+            showLoginMenu(scan);
         });
 
 
@@ -316,49 +238,6 @@ public class MainApplication extends Thread {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        /*try {
-            System.out.println("Enter your desired username or enter 'back' to return to the Login Menu:");
-            String username = scan.nextLine().trim();
-            if ("back".equalsIgnoreCase(username)) {
-                showLoginMenu(scan);
-                //return; // Return to showLoginMenu
-            }
-            writer.write("CHECK_USERNAME");
-            writer.println();
-            writer.write(username);
-            writer.println();
-            writer.flush();
-            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-            if ((reader.readLine()).equals("false")) {
-                System.out.println("Username taken! Please try again with another.");
-                showLoginMenu(scan);
-                //return; //if login methods returns false (the username already exits), program returns to showLoginMenu
-                // method writes error to terminal.
-            }
-            System.out.println("Enter your desired password or enter 'back' to return to the Login Menu:");
-            String password = scan.nextLine().trim();
-            if ("back".equalsIgnoreCase(password)) {
-                showLoginMenu(scan);
-                //return; // Return to showLoginMenu
-            }
-            writer.write("CREATE_ACCOUNT");
-            writer.println();
-            writer.write(username);
-            writer.println();
-            writer.write(password);
-            writer.println();
-            writer.flush();
-            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-            if ((reader.readLine()).equals("true")) { //if the account is created successfully
-                System.out.println("Account Created Successfully. Sign in using 'Login'");
-                new User(username, password);
-            } else {
-                System.out.println("There was an error creating your account. Please try again.");
-            }
-        } catch (IOException e) {
-            // NEED SOMETHING IN HERE
-        }*/
-
     } //accountCreationProcess
 
     private void showMainMenu(User currentUser, Scanner scan) {
@@ -377,12 +256,14 @@ public class MainApplication extends Thread {
         searchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 searchProcess(currentUser, scan);
+                frame.dispose();
             }
         });
 
         accountSettingsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 showAccountSettings(currentUser, scan);
+                frame.dispose();
             }
         });
 
@@ -402,41 +283,9 @@ public class MainApplication extends Thread {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-        /*String choice;
-        //do {
-        // Showing main menu options
-        System.out.println("\nMain Menu");
-        System.out.println("1. Search for a user");
-        System.out.println("2. Account settings");
-        System.out.println("3. Logout");
-        System.out.println("Enter choice:");
-
-        choice = scan.nextLine().trim();
-
-        switch (choice) {
-            case "1": // "Search for a user" option
-                searchProcess(currentUser, scan);
-                break; // breaks out of switch, re-displays menu options
-            case "2": // "Account settings" option
-                // Placeholder for account settings functionality
-                showAccountSettings(currentUser, scan);
-                break; // breaks out of switch, re-displays menu options
-            case "3": // "Logout" option.
-                System.out.println("Logging out...");
-                //currentUser.writeToFile();
-                break; // breaks out of switch, re-displays menu options
-            default: // if user inputs anything but the 3 choices
-                System.out.println("Invalid choice. Please try again.");
-                break; // breaks out of switch, re-displays menu options
-        } */
-        //} while (!choice.equals("3"));
-        // This loop will continue until the user chooses "logout"
     } //showMainMenu
 
     private void showAccountSettings(User currentUser, Scanner scan) {
-        // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-
         JFrame frame = new JFrame("Account Settings");
         JPanel panel = new JPanel();
         JLabel messageLabel = new JLabel("           Please select an option:          ");
@@ -449,48 +298,17 @@ public class MainApplication extends Thread {
         panel.add(dMPrivacy);
         panel.add(retToMain);
 
-        /*
-        String choice;
-        //do {
-        // Showing account settings options
-        System.out.println("\nAccount Settings");
-        System.out.println("1. Change account password");
-        System.out.println("2. Change direct messaging privacy");
-        System.out.println("3. Return to Main Menu");
-        System.out.println("Enter choice:");
-
-        choice = scan.nextLine().trim();
-        switch (choice) {
-            case "1": // "Change account password" option.
-                changePasswordProcess(currentUser, scan);
-                break; //breaks out of switch, re displaying account settings options.
-            case "2": // "Change direct messaging privacy" option.
-                changeDirectMessageSetting(currentUser, scan);
-                break; //breaks out of switch, re displaying account settings options.
-            case "3": //"Return to Main Menu"
-                showMainMenu(currentUser, scan);
-                System.out.println("Returning...");
-                break; //breaks out of switch, re displaying account settings options.
-            default: // if choice is anything but the three options
-                System.out.println("Invalid choice. Please try again.");
-                break; //breaks out of switch, re displaying account settings options.
-        } //end switch
-        //} while (!choice.equals("3"));
-         */
-        changePassword.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                changePasswordProcess(currentUser, scan);
-            }
+        changePassword.addActionListener(e -> {
+            changePasswordProcess(currentUser, scan);
+            frame.dispose();
         });
-        dMPrivacy.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                changeDirectMessageSetting(currentUser, scan);
-            }
+        dMPrivacy.addActionListener(e -> {
+            changeDirectMessageSetting(currentUser, scan);
+            frame.dispose();
         });
-        retToMain.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose(); // Close the settings menu window
-            }
+        retToMain.addActionListener(e -> {
+            showMainMenu(currentUser, scan);
+            frame.dispose(); // Close the settings menu window
         });
 
         frame.add(panel);
@@ -501,7 +319,6 @@ public class MainApplication extends Thread {
     } //showAccountSettings
 
     private void changePasswordProcess(User currentUser, Scanner scan) {
-
         JFrame frame = new JFrame("Change Password");
         JPanel panel = new JPanel();
         JLabel welcome = new JLabel("To change your password, enter your old password.\n");
@@ -520,40 +337,37 @@ public class MainApplication extends Thread {
         JButton cancelButton = new JButton("Cancel");
         panel.add(cancelButton);
 
-        cancelButton.addActionListener(new ActionListener() { // if cancel button pressed
-            public void actionPerformed(ActionEvent e) {
-                frame.dispose();
-            }
+        // if cancel button pressed
+        cancelButton.addActionListener(e -> {
+            frame.dispose();
+            showAccountSettings(currentUser, scan);
         });
-        enterButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String oldPass = usernameField.getText().trim();
-                String password = updatedPassword.getText().trim();
+        enterButton.addActionListener(e -> {
+            String oldPass = usernameField.getText().trim();
+            String password = updatedPassword.getText().trim();
 
-                if (!(oldPass.equals(currentUser.getPassword()))) {
-                    JOptionPane.showMessageDialog(frame, "Incorrect old password");
-                } else {
-                    try {
-                        currentUser.setPassword(password);
-                        writer.write("CHANGE_PASSWORD");
-                        writer.println();
-                        writer.write(currentUser.getUsername());
-                        writer.println();
-                        writer.write(password);
-                        writer.println();
-                        writer.flush();
+            if (!(oldPass.equals(currentUser.getPassword()))) {
+                JOptionPane.showMessageDialog(frame, "Incorrect old password");
+            } else {
+                try {
+                    currentUser.setPassword(password);
+                    writer.write("CHANGE_PASSWORD");
+                    writer.println();
+                    writer.write(currentUser.getUsername());
+                    writer.println();
+                    writer.write(password);
+                    writer.println();
+                    writer.flush();
 
-                        if ((reader.readLine()).equals("true")) {
-                            JOptionPane.showMessageDialog(frame, "Password change Successful!");
-                            //User currentUser = new User(username); //Calls User(username) to read the user's
-                            // file and create currentUser
-                            frame.dispose();
-                        } else {
-                            JOptionPane.showMessageDialog(frame, "Password change failed for some reason");
-                        }
-                    } catch (IOException ex) {
-                        JOptionPane.showMessageDialog(frame, "Error occurred during change: " + ex.getMessage());
+                    if ((reader.readLine()).equals("true")) {
+                        JOptionPane.showMessageDialog(frame, "Password change Successful!");
+                        frame.dispose();
+                        showAccountSettings(currentUser, scan);
+                    } else {
+                        JOptionPane.showMessageDialog(frame, "Password change failed.");
                     }
+                } catch (IOException ex) {
+                    JOptionPane.showMessageDialog(frame, "Error occurred during change: " + ex.getMessage());
                 }
             }
         });
@@ -562,53 +376,6 @@ public class MainApplication extends Thread {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-
-            /*
-
-            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-            System.out.println("To change your password, enter your old password.");
-            System.out.println("or enter 'back' to return");
-            String oldPassword = scan.nextLine().trim();
-
-            if ("back".equalsIgnoreCase(oldPassword)) {
-                showAccountSettings(currentUser, scan);
-                return; // returns to showAccountSettings
-            }
-            if (!(oldPassword.equals(currentUser.getPassword()))) {
-                System.out.println("Incorrect Password. Try again");
-                showAccountSettings(currentUser, scan);
-                return; // returns to showAccountSettings
-            }
-            System.out.println("Enter your new password");
-            System.out.println("or enter 'back' to return");
-
-            String newPassword = scan.nextLine().trim();
-            if ("back".equalsIgnoreCase(newPassword)) {
-                showAccountSettings(currentUser, scan);
-                return; // returns to showAccountSettings
-            }
-            currentUser.setPassword(newPassword);
-            writer.write("CHANGE_PASSWORD");
-            writer.println();
-            writer.write(currentUser.getUsername());
-            writer.println();
-            writer.write(newPassword);
-            writer.println();
-            writer.flush();
-            //if (currentUser.writeToFile()) {
-            if (reader.readLine().equals("true")) {
-                System.out.println("Password changed successfully.\nReturning...");
-            } else {
-                // if there's an error writing to the user's file, change the password back to the old password in case
-                // the user's file gets written again and IS successful.
-                System.out.println("There was an error changing your password.\nTry again.");
-                currentUser.setPassword(oldPassword);
-            }
-        } catch (IOException e) {
-            // NEED SOMETHING IN HERE
-        }
-            */
-
     } //changePasswordProcess()
 
     private void changeDirectMessageSetting(User currentUser, Scanner scan) {
@@ -647,9 +414,11 @@ public class MainApplication extends Thread {
                             JOptionPane.showMessageDialog(frame,
                                     "Successfully updated to all users.\n");
                             frame.dispose();
+                            showAccountSettings(currentUser, scan);
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(frame,
+                                "Error occurred during change: " + ex.getMessage());
                     }
                 }
             });
@@ -674,15 +443,18 @@ public class MainApplication extends Thread {
                             JOptionPane.showMessageDialog(frame,
                                     "Successfully updated to friends only.\n");
                             frame.dispose();
+                            showAccountSettings(currentUser, scan);
                         }
                     } catch (Exception ex) {
-                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(frame,
+                                "Error occurred during change: " + ex.getMessage());
                     }
                 }
             });
             cancelButton.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
                     frame.dispose();
+                    showAccountSettings(currentUser, scan);
                 }
             });
             frame.add(panel);
@@ -691,79 +463,8 @@ public class MainApplication extends Thread {
             frame.setLocationRelativeTo(null);
             frame.setVisible(true);
 
-            /*
-
-            // THIS PROCESS NEEDS SERVER CLIENT INTERACTION
-            String choice;
-            //do {
-            // Showing direct messaging setting options
-            System.out.println("Direct Messaging Privacy Choices:");
-            System.out.println("1. Open to everyone");
-            System.out.println("2. Open to just your friends");
-            System.out.println("3. Cancel");
-            System.out.println("Enter choice:");
-
-            choice = scan.nextLine().trim();
-            boolean oldSetting = currentUser.isOpenMessaging();
-            switch (choice) {
-                case "1": //"Open to everyone"
-                    //currentUser.setOpenMessaging(true);
-                    writer.write("SET_OPEN_MESSAGING_TRUE");
-                    writer.println();
-                    writer.write(currentUser.getUsername());
-                    writer.println();
-                    writer.flush();
-                    //if (!currentUser.writeToFile()) {
-                    if (reader.readLine().equals("false")) {
-                        //currentUser.setOpenMessaging(oldSetting);
-                        writer.write("SET_OPEN_MESSAGING");
-                        writer.println();
-                        writer.write(currentUser.getUsername());
-                        writer.println();
-                        writer.write(String.valueOf(oldSetting));
-                        writer.println();
-                        writer.flush();
-                        System.out.println("An error occurred. Could not update your settings.");
-                        break; // breaks out of switch, re displays the direct message options
-                    } else {
-                        System.out.println("Successfully updated your direct messaging to open to all users.");
-                    }
-                    return; //returns back to showAccountSettings
-                case "2":
-                    currentUser.setOpenMessaging(false);
-                    writer.write("SET_OPEN_MESSAGING_FALSE");
-                    writer.println();
-                    writer.write(currentUser.getUsername());
-                    writer.println();
-                    writer.flush();
-                    if (reader.readLine().equals("false")) {
-                        currentUser.setOpenMessaging(oldSetting);
-                        writer.write("SET_OPEN_MESSAGING");
-                        writer.println();
-                        writer.write(String.valueOf(oldSetting));
-                        writer.println();
-                        writer.flush();
-                        System.out.println("An error occurred. Could not update your settings.");
-                        break; // breaks out of switch, re displays the direct message options
-                    } else {
-                        System.out.println("Successfully updated your direct messaging to open to only friends.");
-                    }
-                    return; //returns back to showAccountSettings
-                case "3":
-                    showMainMenu(currentUser, scan);
-                    System.out.println("Returning...");
-                    break;
-                default:
-                    System.out.println("Invalid choice. Please try again.");
-                    break; // breaks out of switch, re displays the direct message options
-            }
-            //} while (!choice.equals("3"));
-
-            */
-
-        } catch (Exception e) { // was ioExeption but intellij got mad
-            // NEED SOMETHING IN HERE
-            e.printStackTrace(); // how bout this
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Error occurred during change: " + e.getMessage());
         }
     } //directMessageSettings
 
@@ -771,7 +472,7 @@ public class MainApplication extends Thread {
     private void searchProcess(User currentUser, Scanner scan) {
         // Setup JFrame for GUI
         JFrame frame = new JFrame("Friendify - Search Users");
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(500, 500);
         frame.setLayout(new BorderLayout());
 
@@ -824,8 +525,8 @@ public class MainApplication extends Thread {
 
                     String results = reader.readLine().trim();
                     if (results.equals("No results")) {
-                        //resultComboBox.addItem("No matched users");
-                        JOptionPane.showMessageDialog(frame, "Try Again. No Matched Users", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(frame, "Try Again. No Matched Users",
+                                "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
                         int numResults = Integer.parseInt(results);
                         for (int i = 0; i < numResults; i++) {
@@ -835,13 +536,14 @@ public class MainApplication extends Thread {
                     }
 
                 } catch (IOException ex) {
-                    JOptionPane.showMessageDialog(frame, "Error communicating with server", "Error", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "Error communicating with server",
+                            "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
 
         backButton.addActionListener(e -> {
-            //showMainMenu(currentUser, scan); // NEEDS TO RE OPEN MAIN MENU
+            showMainMenu(currentUser, scan);
             frame.dispose();
         });
 
@@ -925,7 +627,8 @@ public class MainApplication extends Thread {
             try {
                 status = reader.readLine();
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(frame, "An error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "An error occurred: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
             JOptionPane.showMessageDialog(frame, status); // Show the status message in a dialog box
         });
@@ -944,7 +647,8 @@ public class MainApplication extends Thread {
             try {
                 status = reader.readLine();
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(frame, "An error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "An error occurred: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
             }
             JOptionPane.showMessageDialog(frame, status); // Show the status message in a dialog box
         });
@@ -952,6 +656,7 @@ public class MainApplication extends Thread {
         directMessageButton.addActionListener(e -> {
             // Direct message logic here
             directMessageMenu(currentUser, searchedUser, scan);
+            frame.dispose();
         });
 
         backButton.addActionListener(e -> {
@@ -983,7 +688,8 @@ public class MainApplication extends Thread {
 
                 String opened = reader.readLine();
                 if (opened.equals("false")) {
-                    JOptionPane.showMessageDialog(null, "An error occurred trying to access your messages",
+                    JOptionPane.showMessageDialog(null,
+                            "An error occurred trying to access your messages",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 } else { // if no error occurred while opening messages
                     JFrame frame = new JFrame("Friendify - Direct Message");
@@ -1006,9 +712,11 @@ public class MainApplication extends Thread {
                     deleteInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
                     deleteInstructions.setText("Select a message,then press \nthe 'Delete Message' button.");
                     sidePanel.add(deleteInstructions);
+                    JButton backButton = new JButton("Back");
                     JButton deleteMessageButton = new JButton("Delete Message");
                     deleteMessageButton.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
                     sidePanel.add(deleteMessageButton);
+                    sidePanel.add(backButton);
                     frame.add(sidePanel, BorderLayout.EAST);
 
                     DefaultListModel<String> listModel = new DefaultListModel<>();
@@ -1128,6 +836,11 @@ public class MainApplication extends Thread {
                                 }
                             }
                         }
+                    });
+
+                    backButton.addActionListener(e -> {
+                        userViewerMenu(currentUser, searchedUser, scan);
+                        frame.dispose();
                     });
 
                 } //end inner else
