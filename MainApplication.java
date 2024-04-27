@@ -117,7 +117,7 @@ public class MainApplication extends Thread implements MainInterface {
         JButton backButton = new JButton("Back");
         panel.add(backButton);
 
-        JLabel welcome = new JLabel("Please enter username and password above.\n");
+        JLabel welcome = new JLabel("Please enter username and password below.\n");
         panel.add(welcome);
 
         enterButton.addActionListener(new ActionListener() {
@@ -669,6 +669,7 @@ public class MainApplication extends Thread implements MainInterface {
                 JOptionPane.showMessageDialog(frame, status, "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 directMessageMenu(currentUser, searchedUser, scan);
+                frame.dispose();
             }
         });
 
