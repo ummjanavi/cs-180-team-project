@@ -10,13 +10,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 /**
  * MainApplication.java
  * <p>
  * This class runs the app, Friendify. This is the main application.
  *
  * @author Johanna Palomar, Janavi Munagavalasa, Arushi Chaudhary, Valeria Paulina Cordero Salinas, Corbett Papastathis,
- *
+ * <p>
  * Lecture 1, Lab 10
  * @version 4/27/2024
  */
@@ -56,6 +57,7 @@ public class MainApplication extends Thread implements MainInterface {
             showLoginMenu(scan);
         }
     } //main()
+
     private void showLoginMenu(Scanner scan) {
         JFrame frame = new JFrame("Welcome to Friendify");
         JPanel panel = new JPanel();
@@ -460,7 +462,7 @@ public class MainApplication extends Thread implements MainInterface {
             frame.setVisible(true);
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null,"Error occurred during change: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Error occurred during change: " + e.getMessage());
         }
     } //directMessageSettings
 
@@ -651,8 +653,23 @@ public class MainApplication extends Thread implements MainInterface {
 
         directMessageButton.addActionListener(e -> {
             // Direct message logic here
-            directMessageMenu(currentUser, searchedUser, scan);
-            frame.dispose();
+            writer.write("CHECK_DIRECT\n"); //sends command to check if they can direct message
+            writer.write(currentUser.getUsername() + "\n");
+            writer.write(searchedUser.getUsername() + "\n");
+            writer.flush();
+
+            String status = null;
+            try {
+                status = reader.readLine();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            if (!status.equals("GOOD_TO_MESSAGE")) {
+                JOptionPane.showMessageDialog(frame, status, "Error", JOptionPane.ERROR_MESSAGE);
+            } else {
+                directMessageMenu(currentUser, searchedUser, scan);
+            }
         });
 
         backButton.addActionListener(e -> {
@@ -663,18 +680,65 @@ public class MainApplication extends Thread implements MainInterface {
 
     private void directMessageMenu(User currentUser, User searchedUser, Scanner scan) {
         try {
-            writer.write("CHECK_DIRECT\n"); //sends command to check if they can direct message
-            writer.write(currentUser.getUsername() + "\n");
-            writer.write(searchedUser.getUsername() + "\n");
+            // if they are allowed to direct message! completes actions below.
+            writer.write("OPEN_MESSAGES");
+            writer.println();
+            writer.write(currentUser.getUsername());
+            writer.println();
+            writer.write(searchedUser.getUsername());
+            writer.println();
             writer.flush();
 
-            String status = reader.readLine();
+            String opened = reader.readLine();
+            if (opened.equals("false")) {
+                JOptionPane.showMessageDialog(null,
+                        "An error occurred trying to access your messages",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            } else { // if no error occurred while opening messages
+                JFrame frame = new JFrame("Friendify - Direct Message");
+                frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                frame.setSize(700, 500);
+                frame.setLayout(new BorderLayout());
 
-            if (!status.equals("GOOD_TO_MESSAGE")) {
-                JOptionPane.showMessageDialog(null, status, "Error", JOptionPane.ERROR_MESSAGE);
-            } else { // if they are allowed to direct message! completes actions below.
+                // Header panel with title
+                JLabel headerLabel = new JLabel("FRIENDIFY\n", SwingConstants.CENTER);
+                headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
+                JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                headerPanel.add(headerLabel, BorderLayout.CENTER);
+                headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+                frame.add(headerPanel, BorderLayout.NORTH);
 
-                writer.write("OPEN_MESSAGES");
+                JPanel sidePanel = new JPanel();
+                sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
+                JTextPane deleteInstructions = new JTextPane();
+                deleteInstructions.setEditable(false);
+                deleteInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
+                deleteInstructions.setText("Select a message,then press \nthe 'Delete Message' button.");
+                sidePanel.add(deleteInstructions);
+                JButton backButton = new JButton("Back");
+                JButton deleteMessageButton = new JButton("Delete Message");
+                deleteMessageButton.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
+                sidePanel.add(deleteMessageButton);
+                sidePanel.add(backButton);
+                frame.add(sidePanel, BorderLayout.EAST);
+
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                JList<String> messageList = new JList<>(listModel);
+                JScrollPane scrollPane = new JScrollPane(messageList);
+                frame.add(scrollPane, BorderLayout.CENTER);
+
+                JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+                JButton sendMessageButton = new JButton("Send Message");
+                JTextField messageField = new JTextField(50);
+                inputPanel.add(messageField);
+                inputPanel.add(sendMessageButton);
+                frame.add(inputPanel, BorderLayout.SOUTH);
+
+                frame.setLocationRelativeTo(null); // CENTERS THE WINDOW
+                frame.setResizable(false); // USER CANNOT RESIZE THE WINDOW
+                frame.setVisible(true);
+
+                writer.write("READ_AND_DISPLAY_MESSAGES");
                 writer.println();
                 writer.write(currentUser.getUsername());
                 writer.println();
@@ -682,168 +746,111 @@ public class MainApplication extends Thread implements MainInterface {
                 writer.println();
                 writer.flush();
 
-                String opened = reader.readLine();
-                if (opened.equals("false")) {
-                    JOptionPane.showMessageDialog(null,
-                            "An error occurred trying to access your messages",
-                            "Error", JOptionPane.ERROR_MESSAGE);
-                } else { // if no error occurred while opening messages
-                    JFrame frame = new JFrame("Friendify - Direct Message");
-                    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                    frame.setSize(700, 500);
-                    frame.setLayout(new BorderLayout());
-
-                    // Header panel with title
-                    JLabel headerLabel = new JLabel("FRIENDIFY\n", SwingConstants.CENTER);
-                    headerLabel.setFont(new Font("Serif", Font.BOLD, 24));
-                    JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                    headerPanel.add(headerLabel, BorderLayout.CENTER);
-                    headerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-                    frame.add(headerPanel, BorderLayout.NORTH);
-
-                    JPanel sidePanel = new JPanel();
-                    sidePanel.setLayout(new BoxLayout(sidePanel, BoxLayout.Y_AXIS));
-                    JTextPane deleteInstructions = new JTextPane();
-                    deleteInstructions.setEditable(false);
-                    deleteInstructions.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
-                    deleteInstructions.setText("Select a message,then press \nthe 'Delete Message' button.");
-                    sidePanel.add(deleteInstructions);
-                    JButton backButton = new JButton("Back");
-                    JButton deleteMessageButton = new JButton("Delete Message");
-                    deleteMessageButton.setAlignmentX(Component.CENTER_ALIGNMENT);  // Align centrally horizontally
-                    sidePanel.add(deleteMessageButton);
-                    sidePanel.add(backButton);
-                    frame.add(sidePanel, BorderLayout.EAST);
-
-                    DefaultListModel<String> listModel = new DefaultListModel<>();
-                    JList<String> messageList = new JList<>(listModel);
-                    JScrollPane scrollPane = new JScrollPane(messageList);
-                    frame.add(scrollPane, BorderLayout.CENTER);
-
-                    JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-                    JButton sendMessageButton = new JButton("Send Message");
-                    JTextField messageField = new JTextField(50);
-                    inputPanel.add(messageField);
-                    inputPanel.add(sendMessageButton);
-                    frame.add(inputPanel, BorderLayout.SOUTH);
-
-                    frame.setLocationRelativeTo(null); // CENTERS THE WINDOW
-                    frame.setResizable(false); // USER CANNOT RESIZE THE WINDOW
-                    frame.setVisible(true);
-
-                    writer.write("READ_AND_DISPLAY_MESSAGES");
-                    writer.println();
-                    writer.write(currentUser.getUsername());
-                    writer.println();
-                    writer.write(searchedUser.getUsername());
-                    writer.println();
-                    writer.flush();
-
-                    String results = reader.readLine().trim();
-                    ArrayList<String> messages = new ArrayList<>();
-                    if (results.equals("No Messages")) {
-                        messages.add("No messages to display");
-                    } else {
-                        int numResults = Integer.parseInt(results);
-                        for (int i = 0; i < numResults; i++) {
-                            String message = reader.readLine();
-                            messages.add(message);
-                        }
+                String results = reader.readLine().trim();
+                ArrayList<String> messages = new ArrayList<>();
+                if (results.equals("No Messages")) {
+                    messages.add("No messages to display");
+                } else {
+                    int numResults = Integer.parseInt(results);
+                    for (int i = 0; i < numResults; i++) {
+                        String message = reader.readLine();
+                        messages.add(message);
                     }
-                    messages.forEach(listModel::addElement);
+                }
+                messages.forEach(listModel::addElement);
 
-                    sendMessageButton.addActionListener(e -> {
-                        String message = messageField.getText().trim();
-                        if (message.isEmpty()) {
-                            JOptionPane.showMessageDialog(frame, "Message cannot be empty. Try again.",
+                sendMessageButton.addActionListener(e -> {
+                    String message = messageField.getText().trim();
+                    if (message.isEmpty()) {
+                        JOptionPane.showMessageDialog(frame, "Message cannot be empty. Try again.",
+                                "Error", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        writer.write("SEND_MESSAGE");
+                        writer.println();
+                        writer.write(currentUser.getUsername());
+                        writer.println();
+                        writer.write(searchedUser.getUsername());
+                        writer.println();
+                        writer.write(message);
+                        writer.println();
+                        writer.flush();
+                        try {
+                            if (reader.readLine().equals("false")) {
+                                JOptionPane.showMessageDialog(frame, "Error sending message. Try again.",
+                                        "Error", JOptionPane.ERROR_MESSAGE);
+                            } else {
+                                listModel.clear(); //reset messageDisplay
+                                writer.write("READ_AND_DISPLAY_MESSAGES"); // fetch messages again
+                                writer.println();
+                                writer.write(currentUser.getUsername());
+                                writer.println();
+                                writer.write(searchedUser.getUsername());
+                                writer.println();
+                                writer.flush();
+
+                                String r = reader.readLine().trim();
+                                ArrayList<String> m = new ArrayList<>();
+                                if (r.equals("No Messages")) {
+                                    m.add("No messages to display");
+                                } else {
+                                    int numResults = Integer.parseInt(r);
+                                    for (int i = 0; i < numResults; i++) {
+                                        String ms = reader.readLine();
+                                        m.add(ms);
+                                    }
+                                }
+                                m.forEach(listModel::addElement);
+                            }
+                        } catch (IOException ex) {
+                            JOptionPane.showMessageDialog(frame, "Error communicating with server.",
+                                    "Error", JOptionPane.ERROR_MESSAGE);
+                        }
+                        messageField.setText("");
+                    }
+                });
+
+                deleteMessageButton.addActionListener(e -> {
+                    int selectedIndex = messageList.getSelectedIndex();
+                    if (selectedIndex != -1) {
+                        if (!listModel.getElementAt(selectedIndex).startsWith(currentUser.getUsername())) {
+                            JOptionPane.showMessageDialog(frame, "You can only delete your own messages",
                                     "Error", JOptionPane.ERROR_MESSAGE);
                         } else {
-                            writer.write("SEND_MESSAGE");
+                            listModel.remove(selectedIndex);
+                            writer.write("WRITE_MESSAGES");
                             writer.println();
-                            writer.write(currentUser.getUsername());
-                            writer.println();
-                            writer.write(searchedUser.getUsername());
-                            writer.println();
-                            writer.write(message);
-                            writer.println();
+                            writer.write(currentUser.getUsername() + "\n");
+                            writer.write(searchedUser.getUsername() + "\n");
+                            writer.write(listModel.getSize() + "\n");
                             writer.flush();
+                            for (int i = 0; i < listModel.getSize(); i++) {
+                                writer.write(listModel.getElementAt(i));
+                                writer.println();
+                                writer.flush();
+                            }
                             try {
                                 if (reader.readLine().equals("false")) {
-                                    JOptionPane.showMessageDialog(frame, "Error sending message. Try again.",
+                                    JOptionPane.showMessageDialog(frame, "Error Deleting Message.",
                                             "Error", JOptionPane.ERROR_MESSAGE);
-                                } else {
-                                    listModel.clear(); //reset messageDisplay
-                                    writer.write("READ_AND_DISPLAY_MESSAGES"); // fetch messages again
-                                    writer.println();
-                                    writer.write(currentUser.getUsername());
-                                    writer.println();
-                                    writer.write(searchedUser.getUsername());
-                                    writer.println();
-                                    writer.flush();
-
-                                    String r = reader.readLine().trim();
-                                    ArrayList<String> m = new ArrayList<>();
-                                    if (r.equals("No Messages")) {
-                                        m.add("No messages to display");
-                                    } else {
-                                        int numResults = Integer.parseInt(r);
-                                        for (int i = 0; i < numResults; i++) {
-                                            String ms = reader.readLine();
-                                            m.add(ms);
-                                        }
-                                    }
-                                    m.forEach(listModel::addElement);
                                 }
                             } catch (IOException ex) {
                                 JOptionPane.showMessageDialog(frame, "Error communicating with server.",
                                         "Error", JOptionPane.ERROR_MESSAGE);
                             }
-                            messageField.setText("");
                         }
-                    });
+                    }
+                });
 
-                    deleteMessageButton.addActionListener(e -> {
-                        int selectedIndex  = messageList.getSelectedIndex();
-                        if (selectedIndex != -1) {
-                            if (!listModel.getElementAt(selectedIndex).startsWith(currentUser.getUsername())) {
-                                JOptionPane.showMessageDialog(frame, "You can only delete your own messages",
-                                        "Error", JOptionPane.ERROR_MESSAGE);
-                            } else {
-                                listModel.remove(selectedIndex);
-                                writer.write("WRITE_MESSAGES");
-                                writer.println();
-                                writer.write(currentUser.getUsername() + "\n");
-                                writer.write(searchedUser.getUsername() + "\n");
-                                writer.write(listModel.getSize() + "\n");
-                                writer.flush();
-                                for (int i = 0; i < listModel.getSize(); i++) {
-                                    writer.write(listModel.getElementAt(i));
-                                    writer.println();
-                                    writer.flush();
-                                }
-                                try {
-                                    if (reader.readLine().equals("false")) {
-                                        JOptionPane.showMessageDialog(frame, "Error Deleting Message.",
-                                                "Error", JOptionPane.ERROR_MESSAGE);
-                                    }
-                                } catch (IOException ex) {
-                                    JOptionPane.showMessageDialog(frame, "Error communicating with server.",
-                                            "Error", JOptionPane.ERROR_MESSAGE);
-                                }
-                            }
-                        }
-                    });
+                backButton.addActionListener(e -> {
+                    userViewerMenu(currentUser, searchedUser, scan);
+                    frame.dispose();
+                });
 
-                    backButton.addActionListener(e -> {
-                        userViewerMenu(currentUser, searchedUser, scan);
-                        frame.dispose();
-                    });
-
-                } //end inner else
-            }//end outer ELSE
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error communicating with server.",
-                    "Error", JOptionPane.ERROR_MESSAGE);            }
-    } //directMessageMenu
+            } //end inner else
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(null, "Error communicating with server.",
+                "Error", JOptionPane.ERROR_MESSAGE);
+    }
+} //directMessageMenu
 
 } // End class
