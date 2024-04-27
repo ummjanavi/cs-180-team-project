@@ -117,7 +117,7 @@ public class MainApplication extends Thread implements MainInterface {
         JButton backButton = new JButton("Back");
         panel.add(backButton);
 
-        JLabel welcome = new JLabel("Please enter username and password below.\n");
+        JLabel welcome = new JLabel("Please enter username and password above.\n");
         panel.add(welcome);
 
         enterButton.addActionListener(new ActionListener() {
