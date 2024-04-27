@@ -270,7 +270,7 @@ public class MainApplication extends Thread implements MainInterface {
         logoutButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 frame.dispose(); // Close the main menu window
-                showMainMenu(currentUser, scan);
+                showLoginMenu(scan);
             }
         });
 
