@@ -1,40 +1,315 @@
-README
-To begin running the project on vocareum, compile the server by typing "javac AppServer.java" in the terminal, then run it by typing "java AppServer" in the terminal.
-Secondly, compile the client by typing "javac MainApplication.java" in the terminal, then run it by typing "java MainApplication" in the terminal.
-The user is first prompted with the login menu, where they can choose to login to an an existing account, create a new account, or type exit to end the program.
-For easy use, the user can simply enter 1 or 2 to login or create a new account, respectively.
-NOTE: When being prompted to enter an input that is not a menu option (Ex. entering a username), the user can type "back" (not case sensitive) to return to the previous menu.
-1. Login: When chosing the login option, the user will need to enter their username first (not case sensitive). If the username is found as a text file, the user will then be prompted to enter their password. If the password matches the one written in the user-specific text file, the main menu will show.
-2. Create Account: When chosing the create account option, the user will be asked to choose a username. If the username chosen matches a username already created in the program, the user will be asked to enter a different username, as it is already taken. Once the user enters a valid username, they will need to create a password. Both the username and password will be saved to a new text named "username".txt, and the main menu will show.
-Main Menu
-After being prompted the main menu, the user will have the option to search for a user, view their own account settings, or logout by entering 1, 2, or 3, respectively.
-1. Search for a user: If the user chooses to search a user, they will be asked to provide an input. The program will then show every user containing their input in a numbered list. The user will input the number corresponding with the user of their choice.
-     Once the user selects another user, they will be presented with a user menu, where they have the option to add or remove a user as a friend, block or unblock a user, direct message a user, or exit.
-       1. Add/Remove User as friend: Depending on a user's privacy settings, they may be able to only send messages and recieve messages from friends. If this is the case, they will need to add a friend before being able to message them.
-       2. Block/Unblock User: By blocking another user, both accounts will be removed as each other's friends, and not be able to message each other or add each other as friends. While both users can search the other up, they will not be able to see account details or message each other. When unblocking a user, account settings will be displayed again, but they will not be added as friends again automatically.
-       3. Direct message: Chosing this option will display all previous messages along with the choice to send a message, delete a message, or exit by entering 1, 2, or 3, respectively.
-         1. Send Message: The user will be asked to enter a message which will then be updated in the conversations and the Direct Message menu will then be redisplayed.
-         2. Delete Message: If there are no previous messages the user will be presented with the text: "There are no messages to delete." If there are previous messages the user will be displayed with a list of messages numbered and can delete a message by entering the corresponding number.
-         3. Exit: If the user chooses to exit the direct message menu, they will be prompted with the user menu.
-       4. Exit: If the user choose to exit the direct user menu, they will be prompted with the main menu.
-2. Account Settings: If the user chooses to view their account settings, they will be prompted with the account settings menu where they can change their account password, change their direct messaging privacy, update their profile picture, or return to the main menu by chosing 1, 2, 3, or 4 respectively.
-       1. Change account password: If the user chooses to change their account password, they will first need to enter their old password. If their old password is incorrect, they will  be asked to try again. Once the user correctly inputs the old password, they will be asked to enter a new password of their choice which will then be updated.
-       2. Change direct messaging privacy: If the user chooses to change their direct messaging privacy, they will be prompted with the direct messaging privacy menu where they can chooses to allow messages from everyone, allow messages from just friends, or cancel.
-         1. Open to everyone: By chosing to open messages to everyone, everyone will be able to message them even if they are not added as a friend. However, blocked users will still be unable to message them.
-         2. Open to just your friends: By chosing to open messages to just friends, only people whom the user has added as a friend will be able to message them.
-         3. Cancel: By chosing to cancel, the account settings menu will be displayed
-       3. Update profile picture: If the user chooses to update their profile picture they will be asked to upload a picture in the proper format.
-       4. Return to Main Menu: If the user chooses to return to the main menu, the main menu options will be displayed.
-4. Logout: If the user chooses to logout they will be prompted with the login menu and their information and messages will be saved for the next time they login
-Once presented with the login menu, if the user chooses to end the program, they should type "exit" and terminate the program.
-   
-Class descriptions
-1. AppServer.java is the server class for this program. It reads print statements from the client class and calls methods from LoginMethods, User, DirectMessageMethods, and SearchMethods. It begins by checking if the socket is successfuly connected and continuously reads input statements writen to it from the client. This class stores and accesses all the client's info so it is not being accessed in the client class. 
-1. MainApplication.java acts as the client class of the program. It contains the main method and collect input from the user. When the user wants to perform an action it writes the proper information to the server class to perform the actions. It then reads the information sent to it from the server class to perform the next action accordingly. It displays all the menus and takes in the users input. It also catches any errors to assure a smooth program. This class displays each menu in a loop until the user chooses to exit. MainApplication.java is crucial to running a smooth and convenient program for the user. We created test cases for this class in MainApplicationTest.java. These test cases include login in with a valid password, loging in with an invalid password, creating an account with valid inputs, creative an account with invalid inputs (an existing username), changing a password successfully, changing a password insuccessfully, exiting program, changing direct message privacy, invalid search, going back to a menu by typing "back", as well as invalid inputs.
-2. LoginMethods.java contains all the methods for a successful login. It is called my the MainApplication.java on multiple occations to assist with user login. It checks if a username is taken by reading through an arraylist of all username files. It creates new files for new accounts and adds them to an arraylist. This also ensures the password being used to login matches the password the program has by reading a text files created for each user containing their information. To test the login methods we made LoginMethodTest.java which contains test cases to check all the edge cases in our methods. We tested if a user tries to create an account with an existing username, if a user creates an account with a valid username, if a user creates a new account with a valid username and password, if the user logs in with an invalid username, and if the user logs in with an invalid password.
-3. User.java handles all methods related to a user's account settings. It is called in MainApplication.java in all sections related to account settings. It reads the user's text file and provides information on user settings and privacy. This class holds each user's friends and blocked users in two seperate array lists. The methods in this class include writing and updating information in a user's text file such as password and profile picture changes. We tested this class with UserTest.java. This class checks if the User.java's constructors work properly, if the getter and setters return the correct value, if the addFriend and removeFriend methods work, if the blockUser method works, as well as if the program correctly displays messages.
-4. DirectMessageMethods.java contains all methods related to sending, recieving and deleting messages. It is useful in MainAccount.java when the user is in the direct messages. This method reads from a text file that holds all contents of a conversation between two users and updated the conversations everytime the user wants to send or delete a message. This class displays the entire conversation between two users when a user is direct messaging someone. Every time a user sends, deletes, or recieves a message, this method updates the conversation and automatically redisplays it. We tested this class through directMethodsTest.java. This class tests all the getters and setters ti check if they return the correct value, checks if the program writes to the conversation text file properly, checks if the program takes in valid input values, and checks if the user can send a message properly.
-5. SearchMethods.java contains a singular method that is used to search for a user. It takes in the input and check if any usernames in the arraylist contain this input, then returns a list of usernames to the user. It is used in MainApplication.java when the user choses to search for another user. We testing this class through SearchMethodsTest.java. This class includes creating a new user and deleting a user.
+# Friendify
 
-Group Accountability:
-Submissions Submitted on Brightspace by: Johanna
+Friendify is a client-server social media and messaging application written in Java. Users can create accounts, search for other users, manage friends and blocked users, control messaging privacy, and send direct messages through a graphical interface.
+
+The project was developed as a team project for CS 180 and focuses on object-oriented programming, networking, persistent data storage, GUI development, and software testing.
+
+## Features
+
+* Account creation and login
+* User search
+* Friend and unfriend functionality
+* Block and unblock functionality
+* Direct messaging
+* Message deletion
+* Messaging privacy settings
+* Password changes
+* Profile picture support
+* Persistent user data
+* Client-server communication
+* Input validation and error handling
+
+## Tech Stack
+
+**Language**
+
+* Java
+
+**User Interface**
+
+* Java Swing
+* AWT event handling
+
+**Networking**
+
+* Java `Socket`
+* Java `ServerSocket`
+* TCP client-server architecture
+* BufferedReader and PrintWriter streams
+
+**Data Storage**
+
+* File-based persistent storage
+* Java file I/O
+* Text files for user account information
+* Text files for message history
+
+**Testing**
+
+* Java unit test classes covering account, messaging, search, and application behavior
+
+## Architecture
+
+Friendify follows a client-server architecture.
+
+```text
+             ┌──────────────────────┐
+             │      User / GUI      │
+             │     Java Swing       │
+             └──────────┬───────────┘
+                        │
+                        ▼
+             ┌──────────────────────┐
+             │   MainApplication    │
+             │       Client         │
+             └──────────┬───────────┘
+                        │
+                 TCP Socket :4545
+                        │
+                        ▼
+             ┌──────────────────────┐
+             │      AppServer       │
+             │      Java Server     │
+             └──────────┬───────────┘
+                        │
+           ┌────────────┼─────────────┐
+           ▼            ▼             ▼
+      LoginMethods  SearchMethods  DirectMessageMethods
+           │            │             │
+           └────────────┼─────────────┘
+                        ▼
+                     User
+                        │
+                        ▼
+                 File Storage
+```
+
+The client handles user interaction and sends commands to the server. The server performs application logic and accesses stored user and message data.
+
+This separation keeps sensitive account and data-management operations on the server side rather than directly inside the user interface.
+
+## Networking
+
+Friendify uses Java's built-in networking APIs to establish communication between the client and server.
+
+The server creates a:
+
+```java
+ServerSocket
+```
+
+on port:
+
+```text
+4545
+```
+
+and waits for clients to connect.
+
+The client connects using a Java:
+
+```java
+Socket
+```
+
+to:
+
+```text
+localhost:4545
+```
+
+Communication between the client and server occurs through input and output streams using:
+
+* `BufferedReader`
+* `InputStreamReader`
+* `PrintWriter`
+* `OutputStreamWriter`
+
+The client sends commands and data to the server, and the server interprets those commands and returns the appropriate result.
+
+Examples include:
+
+```text
+Login request
+        ↓
+Client
+        ↓
+TCP Socket
+        ↓
+Server
+        ↓
+LoginMethods
+        ↓
+Stored user data
+        ↓
+Response sent to client
+```
+
+This architecture separates the application's interface from its data-processing logic.
+
+## Data Storage
+
+Friendify uses file-based persistence instead of a traditional relational database.
+
+Each user has stored account information that can include:
+
+* Username
+* Password
+* Friends
+* Blocked users
+* Messaging privacy settings
+* Profile information
+
+Direct-message conversations are also stored in text files so that message histories remain available across application sessions.
+
+Java file I/O is used to read and update this information.
+
+## Main Components
+
+### `AppServer.java`
+
+Runs the Friendify server.
+
+Responsibilities include:
+
+* Opening the server socket
+* Accepting client connections
+* Receiving commands from clients
+* Calling the appropriate application methods
+* Reading and updating stored information
+* Returning responses to the client
+
+### `MainApplication.java`
+
+Acts as the main client application.
+
+Responsibilities include:
+
+* Connecting to the server
+* Displaying the graphical interface
+* Receiving user input
+* Sending commands to the server
+* Processing server responses
+* Handling navigation and errors
+
+### `LoginMethods.java`
+
+Handles account authentication and creation.
+
+Responsibilities include:
+
+* Creating accounts
+* Checking whether usernames already exist
+* Validating usernames and passwords
+* Reading stored login information
+
+### `User.java`
+
+Represents and manages user account information.
+
+Responsibilities include:
+
+* Managing friends
+* Managing blocked users
+* Changing passwords
+* Updating profile information
+* Managing messaging privacy settings
+* Reading and updating stored user data
+
+### `DirectMessageMethods.java`
+
+Handles direct-message functionality.
+
+Responsibilities include:
+
+* Sending messages
+* Reading conversation history
+* Deleting messages
+* Updating stored conversations
+
+### `SearchMethods.java`
+
+Provides user-search functionality by finding usernames that contain the user's search input.
+
+## Running the Project
+
+### Requirements
+
+* Java Development Kit (JDK)
+
+Clone the repository:
+
+```bash
+git clone https://github.com/ummjanavi/cs-180-team-project.git
+cd cs-180-team-project
+```
+
+### 1. Compile the server
+
+```bash
+javac AppServer.java
+```
+
+### 2. Start the server
+
+```bash
+java AppServer
+```
+
+Leave the server running.
+
+### 3. Open another terminal and compile the client
+
+```bash
+javac MainApplication.java
+```
+
+### 4. Run the client
+
+```bash
+java MainApplication
+```
+
+The client connects to the server on:
+
+```text
+localhost:4545
+```
+
+## User Workflow
+
+After launching the application, users can:
+
+1. Create an account or log in.
+2. Search for another user.
+3. Add or remove users as friends.
+4. Block or unblock users.
+5. Send and delete direct messages.
+6. Modify account and messaging privacy settings.
+7. Log out while preserving account and conversation data.
+
+## Testing
+
+The project includes test classes for several major components:
+
+```text
+AppServerTest.java
+DirectMessageMethodsTests.java
+LoginMethodsTest.java
+MainApplicationTest.java
+SearchMethodsTest.java
+UserTest.java
+```
+
+Tests cover functionality such as:
+
+* Successful and unsuccessful logins
+* Account creation
+* Duplicate usernames
+* Password changes
+* Invalid user input
+* User search
+* Friend and block functionality
+* Sending messages
+* Message persistence
+* Navigation between menus
